@@ -21,7 +21,7 @@ void Scene::resize(int width, int height) {
 }
 
 void Scene::draw() {
-    glClearColor(0.36f,0.15f,0.1f,1.0f);93, 163, 140
+    glClearColor(0.36f,0.64f,0.55f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     //_view = _camera.viewmatrix();

@@ -37,7 +37,7 @@ add_executable(${PROJECT_NAME} main.cpp
         src/Object/mesh.h
         src/Object/model.cpp
         src/Object/model.h
-        )
+        src/Light/light.cpp src/Light/light.h)
 
 
 set(EXT_LIBS Qt5::OpenGL ${OPENGL_LIBRARIES})

@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
+
+#include "src/Light/light.h"
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
@@ -21,13 +23,14 @@ private:
     int _width;
     int _height;
 
-    glm::mat4 _view;
-    glm::mat4 _projection;
+    glm::mat4 _view{};
+    glm::mat4 _projection{};
 
     Camera _camera;
     Shader _shader;
-    std::unique_ptr<Model> _object;
 
+    std::vector<std::unique_ptr<Model>> _objects;
+    std::vector<std::unique_ptr<Light>> _lights;
 };
 
 #endif //HENJIN_SCENE_H

@@ -12,7 +12,7 @@ out vec3 fragPosWorld;
 void main(){
     gl_Position = projection * view * model * vec4(position, 1.0f);
 //    gl_Position = vec4(position, 1.0f);
-    normal = inormal;
+    normal = normalize(inormal);
     fragPos = position;
     fragPosWorld = vec3(model*vec4(position, 1));
 }

@@ -13,6 +13,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _objects.back()->translate(glm::vec3(-0.25,-0.25,0));
 
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(1),glm::vec3(0.8)));
+    _lights.emplace_back(std::make_unique<Light>(glm::vec3(-1,-1,1),glm::vec3(0.8,0,0)));
 }
 
 void Scene::resize(int width, int height) {
@@ -30,9 +31,15 @@ void Scene::draw() {
 
     _shader.use();
 
-    _shader.setVec3("lightPos", _lights.back()->position());
-    _shader.setVec3("lightColor", _lights.back()->color());
     _shader.setVec3("cameraPos", _camera.position());
+    _shader.setInt("nbLight",_lights.size());
+
+    int i = 0;
+    for(const auto& light : _lights) {
+        _shader.setVec3("lights[" + std::to_string(i) + "].position", light->position());
+        _shader.setVec3("lights[" + std::to_string(i) + "].color", light->color());
+        ++i;
+    }
 
     for(const auto &object : _objects) {
         _shader.setMat4fv("model", object->model());

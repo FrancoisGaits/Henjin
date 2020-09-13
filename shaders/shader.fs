@@ -1,4 +1,12 @@
 #version 410 core
+
+#define N_MAX_LIGHT 32
+
+struct Light {
+    vec3 position;
+    vec3 color;
+};
+
 in vec3 normal;
 in vec3 fragPosWorld;
 
@@ -6,27 +14,30 @@ const float PI = 3.141592;
 const float Epsilon = 0.00001;
 const vec3 Fdielctric = vec3(0.04);
 
-uniform vec3 lightPos;
-uniform vec3 lightColor;
 uniform vec3 cameraPos;
+uniform int nbLight;
+
+uniform Light lights[N_MAX_LIGHT];
+
+
 
 out vec4 color;
 
 vec3 fresnel(vec3 F, float cos) {
-    return F + (vec3(1)-F) * pow(1 - cos, 5);
+    return F + (vec3(1.0)-F) * pow(1.0 - cos, 5.0);
 }
 
 float nd(float cos, float roughness) {
     float alpha = roughness * roughness;
     float alphaSq = alpha * alpha;
 
-    float den = (cos * cos) * (alphaSq - 1) + 1;
+    float den = (cos * cos) * (alphaSq - 1.0) + 1.0;
 
     return alphaSq / (PI * den * den);
 }
 
 float gaG1(float cos, float k) {
-    return cos / (cos * (1 - k) + k);
+    return cos / (cos * (1.0 - k) + k);
 }
 
 float ga(float cosNL, float cosNV, float roughness) {
@@ -51,24 +62,27 @@ void main() {
 
     vec3 F0 = mix(Fdielctric, albedo, metalness);
 
+    vec3 direct = vec3(0);
+    for(int i=0; i<nbLight; ++i) {
+        vec3 lightDir = lights[i].position - fragPosWorld;
+        vec3 h = normalize(lightDir+view);
 
-    vec3 lightDir = lightPos - fragPosWorld;
-    vec3 h = normalize(lightDir+view);
+        float cosNL = max(0.0, dot(normal, lightDir));
+        float cosNH = max(0.0, dot(normal, h));
 
-    float cosNL = max(0.0, dot(normal,lightDir));
-    float cosNH = max(0.0, dot(normal, h));
-
-    vec3 F = fresnel(F0, max(0.0, dot(h,view)));
-    float D = nd(cosNH, roughness);
-    float G = ga(cosNL, cosNV, roughness);
+        vec3 F = fresnel(F0, max(0.0, dot(h, view)));
+        float D = nd(cosNH, roughness);
+        float G = ga(cosNL, cosNV, roughness);
 
 
-    vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
+        vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
 
-    vec3 diffuse = kd*albedo;
+        vec3 diffuse = kd*albedo;
 
-    vec3 specular = (D * F * G) / max(Epsilon, 4.0 * cosNL * cosNV);
+        vec3 specular = (D * F * G) / max(Epsilon, 4.0 * cosNL * cosNV);
 
-    color = vec4((diffuse + specular) * lightColor * cosNL,1.0);
+        direct += vec3((diffuse + specular) * lights[i].color * cosNL);
+    }
 
+    color = vec4(direct,1.0);
 }

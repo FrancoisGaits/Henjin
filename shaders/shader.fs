@@ -47,6 +47,15 @@ float ga(float cosNL, float cosNV, float roughness) {
     return gaG1(cosNL, k) * gaG1(cosNV, k);
 }
 
+vec3 diffuseFresnel(vec3 ior) {
+    vec3 iorSq = ior*ior;
+    bvec3 TIR = lessThan(ior, vec3(1.0));
+    vec3 invdenum = mix(vec3(1.0), vec3(1.0) / (iorSq * iorSq * (vec3(554.33) - 380.7 * ior)), TIR);
+    vec3 num = ior * mix(vec3(0.1921156102251088), ior * 298.25 - 261.38 * iorSq + 138.43, TIR);
+    num += mix(vec3(0.8078843897748912), vec3(-1.67), TIR);
+    return num * invdenum;
+}
+
 void main() {
 //    color = vec4( clamp( dot( normalize(normal), normalize(lightPos-fragPosWorld)), 0, 1 ) * lightColor, 1.0);
 
@@ -74,14 +83,23 @@ void main() {
         float D = nd(cosNH, roughness);
         float G = ga(cosNL, cosNV, roughness);
 
+        vec3 FT = fresnel(F0, max(0.0, dot(normal,lightDir)));
+        vec3 FTir = fresnel(F0, max(0.0, dot(view, normal)));
 
-        vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
+        vec3 dfc = diffuseFresnel(vec3(1.05));
 
-        vec3 diffuse = kd*albedo;
+        vec3 lambertian = albedo / PI;
+
+
+//        vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
+//
+//        vec3 diffuse = kd*albedo;
 
         vec3 specular = (D * F * G) / max(Epsilon, 4.0 * cosNL * cosNV);
 
-        direct += vec3((diffuse + specular) * lights[i].color * cosNL);
+//        direct += vec3((diffuse + specular) * lights[i].color * cosNL);
+
+        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * lights[i].color * cosNL;
     }
 
     color = vec4(direct,1.0);

@@ -7,14 +7,6 @@ Model::Model(std::string name, glm::vec3 color, float div) : _name{name}, _color
     mesh = loadMesh(name, div);
 
     _model = glm::mat4(1.f);
-//    mesh.addVertex(-0.5f,-0.5f,0);
-//    mesh.addVertex(0.5f,-0.5f,0);
-//    mesh.addVertex(0.f,0.5f,0);
-//    mesh.addNormal(0,0,0);
-//    mesh.addNormal(0,0,0);
-//    mesh.addNormal(0,0,0);
-//
-//    mesh.addTri(0,1,2);
 
     mesh.load();
 }

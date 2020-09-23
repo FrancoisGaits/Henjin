@@ -44,3 +44,7 @@ void GlWidget::resizeGL(int width, int height) {
 GlWidget::~GlWidget() {
 
 }
+
+void GlWidget::keyPressEvent(QKeyEvent *event) {
+    std::cout << event->key() << std::endl;
+}

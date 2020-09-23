@@ -5,6 +5,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QOpenGLFunctions_4_1_Core>
 #include <memory>
+#include <QKeyEvent>
 
 #include "scene.h"
 
@@ -22,10 +23,11 @@ public slots:
     void cleanup();
 
 protected:
-    // OpenGL management
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int width, int height) override;
+
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     std::unique_ptr<Scene> _scene;

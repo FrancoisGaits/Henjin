@@ -12,6 +12,12 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2000));
     _objects.back()->translate(glm::vec3(-0.25,-0.25,0));
 
+    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2000));
+    _objects.back()->translate(glm::vec3(0.25,-0.25,0));
+
+    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2500));
+    _objects.back()->translate(glm::vec3(0,-0.25,0));
+
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(1),glm::vec3(0.8)));
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(-1,-1,1),glm::vec3(0.8,0,0)));
 }
@@ -27,9 +33,12 @@ void Scene::draw() {
     glClearColor(0.36f,0.64f,0.55f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //_view = _camera.viewmatrix();
+    _view = _camera.viewmatrix();
 
     _shader.use();
+
+    _shader.setMat4fv("view", _view);
+    _shader.setMat4fv("projection", _projection);
 
     _shader.setVec3("cameraPos", _camera.position());
     _shader.setInt("nbLight",_lights.size());
@@ -43,9 +52,6 @@ void Scene::draw() {
 
     for(const auto &object : _objects) {
         _shader.setMat4fv("model", object->model());
-        _shader.setMat4fv("view", _view);
-        _shader.setMat4fv("projection", _projection);
-
         object->draw();
     }
 

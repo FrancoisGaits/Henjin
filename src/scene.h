@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
+#include "Object/line.h"
 
 class Scene {
 public:
@@ -30,6 +31,9 @@ private:
     Shader _shader;
 
     std::vector<std::unique_ptr<Model>> _objects;
+
+    std::vector<std::unique_ptr<Line>> _lines;
+
     std::vector<std::unique_ptr<Light>> _lights;
 };
 

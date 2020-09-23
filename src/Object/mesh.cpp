@@ -1,3 +1,4 @@
+#include <iostream>
 #include "mesh.h"
 
 void Mesh::addQuad(unsigned a, unsigned b, unsigned c, unsigned d) {
@@ -70,9 +71,9 @@ void Mesh::load() {
     glBindVertexArray(0);
 }
 
-void Mesh::draw() const {
+void Mesh::draw(GLenum mode) const {
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
@@ -87,4 +88,12 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &_nbo);
     glDeleteBuffers(1, &_ebo);
     glDeleteVertexArrays(1, &_vao);
+}
+
+void Mesh::addIndex(unsigned int a) {
+    indices.emplace_back(a);
+}
+
+void Mesh::addNormal(glm::vec3 &v) {
+    addNormal(v[0],v[1],v[2]);
 }

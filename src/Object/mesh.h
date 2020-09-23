@@ -23,9 +23,11 @@ public:
 
     void addQuad(unsigned a, unsigned b, unsigned c, unsigned d);
     void addTri(unsigned a, unsigned b, unsigned c);
+    void addIndex(unsigned a);
     void addVertex(float x, float y, float z);
     void addVertex(glm::vec3 &v);
     void addNormal(float x, float y, float z);
+    void addNormal(glm::vec3 &v);
 
     unsigned nbTriangles() const;
     unsigned nbVertices() const;
@@ -34,7 +36,7 @@ public:
 
     void load();
 
-    void draw() const;
+    void draw(GLenum mode = GL_TRIANGLES) const;
 
     void clear();
 

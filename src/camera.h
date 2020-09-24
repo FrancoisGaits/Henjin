@@ -8,7 +8,7 @@
 
 class Camera {
 public :
-    explicit Camera(glm::vec3 position = glm::vec3(0.f,0.f,1.f), glm::vec3 up = glm::vec3(0.f,1.f,0.f), glm::vec3 look = glm::vec3(0.f), float zoom = 45.f );
+    explicit Camera(glm::vec3 position = glm::vec3(0.f,0.f,10.f), glm::vec3 up = glm::vec3(0.f,1.f,0.f), glm::vec3 look = glm::vec3(0.f), float zoom = 45.f );
     ~Camera() = default;
 
     glm::mat4 viewmatrix() const;

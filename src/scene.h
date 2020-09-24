@@ -20,9 +20,14 @@ public:
     void resize(int width, int height);
     void draw();
 
+    void click(unsigned button, int x, int y);
+    void move(int x, int y);
+
 private:
     int _width;
     int _height;
+
+    unsigned _button;
 
     glm::mat4 _view{};
     glm::mat4 _projection{};

@@ -57,3 +57,14 @@ void Scene::draw() {
 
 
 }
+
+
+
+void Scene::click(unsigned button, int x, int y) {
+    _button = button;
+    _camera.click(button,x,y);
+}
+
+void Scene::move(int x, int y) {
+    _camera.move(x,y);
+}

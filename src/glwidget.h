@@ -29,6 +29,10 @@ protected:
 
     void keyPressEvent(QKeyEvent *event) override;
 
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
+
 private:
     std::unique_ptr<Scene> _scene;
 

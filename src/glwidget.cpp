@@ -48,3 +48,25 @@ GlWidget::~GlWidget() {
 void GlWidget::keyPressEvent(QKeyEvent *event) {
     std::cout << event->key() << std::endl;
 }
+
+void GlWidget::mouseMoveEvent(QMouseEvent *event) {
+    _scene->move(event->x(),event->y());
+    update();
+}
+
+void GlWidget::mousePressEvent(QMouseEvent *event) {
+    unsigned b;
+    switch(event->button()) {
+        case Qt::LeftButton :
+            b = 1;
+            break;
+        case Qt::RightButton :
+            b = 2;
+            break;
+        default:
+            b = 0;
+            break;
+    }
+
+    _scene->click(b,event->x(),event->y());
+}

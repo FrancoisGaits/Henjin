@@ -46,7 +46,15 @@ GlWidget::~GlWidget() {
 }
 
 void GlWidget::keyPressEvent(QKeyEvent *event) {
-    std::cout << event->key() << std::endl;
+    switch(event->key()){
+        case Qt::Key_R :
+            _scene->resetCamera();
+            update();
+            break;
+        default:
+
+            break;
+    }
 }
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {

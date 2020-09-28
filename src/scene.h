@@ -21,6 +21,7 @@ public:
 
     void click(unsigned button, int x, int y);
     void move(int x, int y);
+    void resetCamera();
 
 private:
     int _width;

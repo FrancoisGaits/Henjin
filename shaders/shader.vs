@@ -4,14 +4,17 @@ layout (location = 1) in vec3 inormal;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 color;
 
 out vec3 normal;
 out vec3 fragPos;
 out vec3 fragPosWorld;
+out vec3 fragColor;
 
 void main(){
     gl_Position = projection * view * model * vec4(position, 1.0f);
 //    gl_Position = vec4(position, 1.0f);
+    fragColor = color;
     normal = normalize(inormal);
     fragPos = position;
     fragPosWorld = vec3(model*vec4(position, 1));

@@ -9,6 +9,7 @@ struct Light {
 
 in vec3 normal;
 in vec3 fragPosWorld;
+in vec3 fragColor;
 
 const float PI = 3.141592;
 const float Epsilon = 0.00001;
@@ -99,7 +100,7 @@ void main() {
 
 //        direct += vec3((diffuse + specular) * lights[i].color * cosNL);
 
-        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * lights[i].color * cosNL;
+        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * lights[i].color * fragColor * cosNL;
     }
 
     color = vec4(direct,1.0);

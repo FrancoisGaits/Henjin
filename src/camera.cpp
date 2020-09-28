@@ -5,7 +5,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 look, float zoom) :  
                                                                                 _front(look - position),
                                                                                 _up(up),
                                                                                 _speed(1.f),
-                                                                                _sensitivity(1.f),
+                                                                                _sensitivity(10.f),
                                                                                 _zoom(zoom) {
     _radius = glm::length(_front);
     _front *= 1.f / _radius;

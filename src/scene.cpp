@@ -1,3 +1,4 @@
+#include <src/Object/plane.h>
 #include "scene.h"
 
 Scene::Scene(int width, int height) : _width(width), _height(height) {
@@ -9,8 +10,8 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _view = _camera.viewmatrix();
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 
-    _objects.emplace_back(std::make_unique<Model>("aya.obj",glm::vec3(1),500));
-    _objects.back()->translate(glm::vec3(0,-0.5,0));
+    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
+    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-1,0),glm::vec3(0,-1,0),150));
 
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(1),glm::vec3(0.8)));
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(-1,-1,1),glm::vec3(0.8,0,0)));

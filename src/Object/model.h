@@ -4,27 +4,18 @@
 #include <string>
 #include <iostream>
 #include "mesh.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include "shape.h"
 
-class Model {
+class Model : public Shape {
 public:
-    explicit Model(std::string name, glm::vec3 color = glm::vec3(1), float div = 2000.f);
+    explicit Model(const std::string& name, glm::vec3 position, glm::vec3 color, float scale=1.f, float div = 2000.f);
 
-    void draw() const;
+    void draw() const override;
 
-    const glm::vec3 &color() const;
-    const glm::mat4 &model() const;
-
-    static Mesh loadMesh(std::string &path, float div = 2000.f);
-
-    void translate(glm::vec3 vec);
+    static Mesh loadMesh(const std::string &path, float div = 2000.f);
 
 private:
     std::string _name;
-
-    glm::vec3 _color;
-    glm::mat4 _model;
-    Mesh mesh;
 };
 
 

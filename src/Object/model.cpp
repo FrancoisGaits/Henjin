@@ -3,15 +3,13 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
-Model::Model(std::string name, glm::vec3 color, float div) : _name{name}, _color{color} {
-    mesh = loadMesh(name, div);
+Model::Model(const std::string& name, glm::vec3 position, glm::vec3 color, float scale, float div) : Shape(position, color, scale), _name{name}{
+    _mesh = loadMesh(name, div);
 
-    _model = glm::mat4(1.f);
-
-    mesh.load();
+    _mesh.load();
 }
 
-Mesh Model::loadMesh(std::string &name, float div) {
+Mesh Model::loadMesh(const std::string &name, float div) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -62,17 +60,5 @@ Mesh Model::loadMesh(std::string &name, float div) {
 }
 
 void Model::draw() const {
-    mesh.draw();
-}
-
-const glm::vec3 &Model::color() const {
-    return _color;
-}
-
-const glm::mat4 &Model::model() const {
-    return _model;
-}
-
-void Model::translate(glm::vec3 vec) {
-    _model = glm::translate(_model, vec);
+    _mesh.draw();
 }

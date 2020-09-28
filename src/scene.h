@@ -34,7 +34,7 @@ private:
     Camera _camera;
     Shader _shader;
 
-    std::vector<std::unique_ptr<Model>> _objects;
+    std::vector<std::unique_ptr<Shape>> _objects;
     std::vector<std::unique_ptr<Light>> _lights;
 };
 

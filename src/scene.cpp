@@ -11,20 +11,17 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 
     std::vector<glm::vec3> points;
-    points.emplace_back(glm::vec3(-1.5,0.75,-1.5));
-    points.emplace_back(glm::vec3(-0.75,-0.75,1.5));
-    points.emplace_back(glm::vec3(0.75,-0.75,-1.5));
-    points.emplace_back(glm::vec3(1.5,0.75,1.5));
-    points.emplace_back(glm::vec3(-1.5,0.75,-1.5));
-    points.emplace_back(glm::vec3(-0.75,-0.75,1.5));
-    points.emplace_back(glm::vec3(0.75,-0.75,-1.5));
-    points.emplace_back(glm::vec3(1.5,0.75,1.5));
+    points.emplace_back(glm::vec3(-5.5,0.75,-1.5));
+    points.emplace_back(glm::vec3(-3.75,-1.75,2.5));
+    points.emplace_back(glm::vec3(-0.25,0.75,-1.5));
+    points.emplace_back(glm::vec3(3.75,-3.75,1.5));
+    points.emplace_back(glm::vec3(5.75,0.75,-4.5));
 
-    _lines.emplace_back(std::make_unique<Line>(points));
+    _lines.emplace_back(std::make_unique<Line>(points, false));
 
 
     std::vector<glm::vec3> points_bs;
-    Bspline bs(points,4);
+    Bspline bs(points,2);
     float pas = 0.1f;
     for(float u=bs.startInterval(); u<bs.endInterval(); u+=pas){
         points_bs.emplace_back(bs.eval(u));
@@ -53,7 +50,7 @@ void Scene::resize(int width, int height) {
 }
 
 void Scene::draw() {
-    glClearColor(0.36f,0.64f,0.55f,1.0f);
+    glClearColor(1.f,1.f,1.f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     _view = _camera.viewmatrix();

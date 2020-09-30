@@ -1,7 +1,7 @@
 #include "line.h"
 
 
-Line::Line(const std::vector<glm::vec3>& points, glm::vec3 color) : _color{color} {
+Line::Line(const std::vector<glm::vec3>& points, bool line, glm::vec3 color) : _line{line}, _color{color} {
     _model = glm::mat4(1.f);
 
     unsigned i = 0;
@@ -29,5 +29,5 @@ void Line::translate(glm::vec3 vec) {
 }
 
 void Line::draw() const {
-    mesh.draw(GL_LINE_STRIP);
+    mesh.draw(_line ? GL_LINE_STRIP : GL_POINTS);
 }

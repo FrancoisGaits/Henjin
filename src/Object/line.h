@@ -9,7 +9,7 @@
 class Line {
 
 public:
-    explicit Line(const std::vector<glm::vec3>& points, glm::vec3 color = glm::vec3(1));
+    explicit Line(const std::vector<glm::vec3>& points,bool line = true, glm::vec3 color = glm::vec3(1));
 
     void draw() const;
 
@@ -19,7 +19,7 @@ public:
     void translate(glm::vec3 vec);
 
 private:
-    std::string _name;
+    bool _line;
 
     glm::vec3 _color;
     glm::mat4 _model;

@@ -1,7 +1,7 @@
 
 #include "glwidget.h"
 
-GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent){
+GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent), _lines{false}{
 
 }
 
@@ -31,7 +31,12 @@ void GlWidget::initializeGL() {
 }
 
 void GlWidget::paintGL() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if(_lines) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
     _scene->draw();
     glFinish();
 
@@ -46,7 +51,16 @@ GlWidget::~GlWidget() {
 }
 
 void GlWidget::keyPressEvent(QKeyEvent *event) {
+    switch(event->key()) {
+        case Qt::Key_W :
+            _lines = !_lines;
+            break;
+        default:
+            break;
+    }
+
     std::cout << event->key() << std::endl;
+
 }
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {

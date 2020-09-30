@@ -35,6 +35,7 @@ protected:
 
 private:
     std::unique_ptr<Scene> _scene;
+    bool _lines;
 
 };
 

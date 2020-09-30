@@ -1,6 +1,6 @@
 #include "plane.h"
 
-Plane::Plane(glm::vec3 position, glm::vec3 normal, float side) : Shape(position, glm::vec3(0.8),side/2) {
+Plane::Plane(glm::vec3 position, glm::vec3 normal, float side) : Shape(position, glm::vec3(1),side/2) {
 
     glm::vec3 z = glm::vec3(0,0,1);
     glm::vec3 x = glm::cross(glm::normalize(normal), z);

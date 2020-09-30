@@ -13,8 +13,8 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
     _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(0,1,0),100));
 
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(1),glm::vec3(0.8)));
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(-1,1,1),glm::vec3(0.8,0,0)));
+    _lights.emplace_back(std::make_unique<Light>(glm::vec3(5),glm::vec3(0.8)));
+    _lights.emplace_back(std::make_unique<Light>(glm::vec3(-5,5,5),glm::vec3(0.8,0,0)));
 }
 
 void Scene::resize(int width, int height) {

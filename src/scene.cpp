@@ -29,15 +29,6 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     _lines.emplace_back(std::make_unique<Line>(points_bs));
 
-//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2000));
-//    _objects.back()->translate(glm::vec3(-0.25,-0.25,0));
-//
-//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2000));
-//    _objects.back()->translate(glm::vec3(0.25,-0.25,0));
-//
-//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1),2500));
-//    _objects.back()->translate(glm::vec3(0,-0.25,0));
-
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(1),glm::vec3(0.8)));
     _lights.emplace_back(std::make_unique<Light>(glm::vec3(-1,-1,1),glm::vec3(0.8,0,0)));
 }
@@ -50,7 +41,11 @@ void Scene::resize(int width, int height) {
 }
 
 void Scene::draw() {
+<<<<<<< HEAD
     glClearColor(1.f,1.f,1.f,1.0f);
+=======
+    glClearColor(1,1,1,1);
+>>>>>>> 1b5a7e51deb4450df5dddf8be70ae8865ad2b91c
     glClear(GL_COLOR_BUFFER_BIT);
 
     _view = _camera.viewmatrix();

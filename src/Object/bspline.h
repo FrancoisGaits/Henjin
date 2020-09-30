@@ -11,8 +11,8 @@ public:
 
     glm::vec3 eval(float u);
 
-    float startInterval();
-    float endInterval();
+    float startInterval() const;
+    float endInterval() const;
 
 private:
     std::vector<glm::vec3> _points;

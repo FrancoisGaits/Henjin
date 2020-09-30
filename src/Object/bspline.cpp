@@ -40,11 +40,11 @@ glm::vec3 Bspline::eval(float u) {
     return pTemp[0];
 }
 
-float Bspline::endInterval() {
+float Bspline::endInterval() const {
     return _endInterval;
 }
 
-float Bspline::startInterval() {
+float Bspline::startInterval() const {
     return _startInterval;
 }
 

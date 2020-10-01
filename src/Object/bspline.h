@@ -9,7 +9,7 @@ class Bspline {
 public:
     explicit Bspline(std::vector<glm::vec3> points, unsigned degree);
 
-    glm::vec3 eval(float u);
+    glm::vec3 eval(float u) const;
 
     float startInterval() const;
     float endInterval() const;

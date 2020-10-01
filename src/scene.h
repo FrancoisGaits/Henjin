@@ -4,8 +4,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
+#include <src/Object/surface.h>
 
 #include "src/Light/light.h"
+#include <src/Object/bspline.h>
+#include <src/Object/bsplinetensor.h>
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
@@ -24,6 +27,11 @@ public:
     void move(int x, int y);
 
 private:
+    void create_bspline();
+    void create_tensor();
+
+    void place_XYZ();
+
     int _width;
     int _height;
 
@@ -36,8 +44,8 @@ private:
     Shader _shader;
 
     std::vector<std::unique_ptr<Model>> _objects;
-
     std::vector<std::unique_ptr<Line>> _lines;
+    std::vector<std::unique_ptr<Surface>> _surfaces;
 
     std::vector<std::unique_ptr<Light>> _lights;
 };

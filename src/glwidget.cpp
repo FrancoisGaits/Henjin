@@ -54,6 +54,7 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
     switch(event->key()) {
         case Qt::Key_W :
             _lines = !_lines;
+            update();
             break;
         default:
             break;

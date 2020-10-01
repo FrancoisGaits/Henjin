@@ -12,7 +12,7 @@ Bspline::Bspline(std::vector<glm::vec3> points, unsigned int degree) : _points{p
 
 }
 
-glm::vec3 Bspline::eval(float u) {
+glm::vec3 Bspline::eval(float u) const {
     unsigned dec = 0;
     unsigned i = _k;
     unsigned m = _k-1;

@@ -9,7 +9,7 @@
 class Line {
 
 public:
-    explicit Line(const std::vector<glm::vec3>& points,bool line = true, glm::vec3 color = glm::vec3(1));
+    explicit Line(const std::vector<glm::vec3>& points,bool line = true, glm::vec3 color = glm::vec3(0));
 
     void draw() const;
 

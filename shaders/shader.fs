@@ -9,6 +9,7 @@ struct Light {
 
 in vec3 normal;
 in vec3 fragPosWorld;
+in vec3 fragColor;
 
 const float PI = 3.141592;
 const float Epsilon = 0.00001;
@@ -74,6 +75,9 @@ void main() {
     vec3 direct = vec3(0);
     for(int i=0; i<nbLight; ++i) {
         vec3 lightDir = lights[i].position - fragPosWorld;
+        float lDist = length(lightDir);
+        lightDir = lightDir/lDist;
+
         vec3 h = normalize(lightDir+view);
 
         float cosNL = max(0.0, dot(normal, lightDir));
@@ -95,12 +99,14 @@ void main() {
 //
 //        vec3 diffuse = kd*albedo;
 
-        vec3 specular = (D * F * G) / max(Epsilon, 4.0 * cosNL * cosNV);
+        vec3 specular = (D * F * G) / max(Epsilon, 2.0 * cosNL * cosNV);
 
 //        direct += vec3((diffuse + specular) * lights[i].color * cosNL);
 
-        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * lights[i].color * cosNL;
+        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * lights[i].color * fragColor * cosNL * (2/(lDist));
     }
 
-    color = vec4(direct,1.0);
+    vec3 ambiant = vec3(0.05) * fragColor;
+
+    color = vec4(direct + ambiant,1.0);
 }

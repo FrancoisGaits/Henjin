@@ -24,7 +24,7 @@ void Mesh::addVertex(float x, float y, float z) {
     vertices.emplace_back(z);
 }
 
-void Mesh::addVertex(glm::vec3 &v) {
+void Mesh::addVertex(const glm::vec3 &v) {
     vertices.emplace_back(v[0]);
     vertices.emplace_back(v[1]);
     vertices.emplace_back(v[2]);
@@ -94,6 +94,6 @@ void Mesh::addIndex(unsigned int a) {
     indices.emplace_back(a);
 }
 
-void Mesh::addNormal(glm::vec3 &v) {
+void Mesh::addNormal(const glm::vec3 &v) {
     addNormal(v[0],v[1],v[2]);
 }

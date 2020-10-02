@@ -1,16 +1,28 @@
 #include "bsplinetensor.h"
 
-BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV) : _points{points} {
+BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV, Knots knotType) : _points{points} {
 
     for(const auto & p : points) {
-        _genBspline.emplace_back(Bspline(p,degreeV));
+        _genBspline.emplace_back(Bspline(p,degreeV,knotType));
     }
 
     _k = degreeU+1;
 
-    //vecteur uniforme
-    for(unsigned i=0; i<points.size()+_k+1; ++i){
-        _knots.emplace_back(i);
+    switch(knotType) {
+        case REGULAR : {
+            unsigned j = 0;
+            for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
+                _knots.emplace_back(j);
+                if(i >= degreeU and i < points.size()) {
+                    ++j;
+                }
+            }
+            break;
+        }
+        default :
+            for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
+                _knots.emplace_back(i);
+            }
     }
 
     _startUInterval = _knots[degreeU];

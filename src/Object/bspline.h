@@ -4,10 +4,15 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+enum Knots {
+    UNIFORM,
+    REGULAR
+};
+
 class Bspline {
 
 public:
-    explicit Bspline(std::vector<glm::vec3> points, unsigned degree);
+    explicit Bspline(std::vector<glm::vec3> points, unsigned degree, Knots knotType = UNIFORM);
 
     glm::vec3 eval(float u) const;
 

@@ -8,7 +8,7 @@
 
 class BSplineTensor {
 public:
-    explicit  BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV);
+    explicit  BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV, Knots knotsType=UNIFORM);
 
     glm::vec3 eval(float u, float v);
 

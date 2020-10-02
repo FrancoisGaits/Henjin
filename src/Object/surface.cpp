@@ -18,7 +18,6 @@ Surface::Surface(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 co
 
     unsigned n = points.back().size();
 
-    std::cout << mesh.nbVertices() << std::endl;
     for(unsigned x = 0; x<n-1; ++x) {
         for(unsigned y = 0; y<points.size()-1; ++y) {
             unsigned a = y*n + x;
@@ -32,23 +31,23 @@ Surface::Surface(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 co
 
 
             normals[a].second++;
-            normals[a].first = normals[a].first + ((normalLower-normals[a].first)/static_cast<float>(normals[a].second));
+            normals[a].first += normalLower;
             normals[c].second++;
-            normals[c].first = normals[c].first + ((normalLower-normals[c].first)/static_cast<float>(normals[c].second));
+            normals[c].first += normalLower;
             normals[d].second++;
-            normals[d].first = normals[d].first + ((normalLower-normals[d].first)/static_cast<float>(normals[d].second));
+            normals[d].first += normalLower;
 
             normals[a].second++;
-            normals[a].first = normals[a].first + ((normalUpper-normals[a].first)/static_cast<float>(normals[a].second));
+            normals[a].first += normalUpper;
             normals[c].second++;
-            normals[c].first = normals[c].first + ((normalUpper-normals[c].first)/static_cast<float>(normals[c].second));
+            normals[c].first += normalUpper;
             normals[b].second++;
-            normals[b].first = normals[b].first + ((normalUpper-normals[b].first)/static_cast<float>(normals[b].second));
+            normals[b].first += normalUpper;
         }
     }
 
     for(const auto & p : normals) {
-        mesh.addNormal(p.first);
+        mesh.addNormal(p.first/ static_cast<float>(p.second));
     }
 
     mesh.load();

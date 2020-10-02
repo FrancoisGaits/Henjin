@@ -104,47 +104,77 @@ void Scene::create_tensor() {
     std::vector<std::vector<glm::vec3>> pointspoints;
 
     std::vector<glm::vec3> points;
-    points.emplace_back(glm::vec3(-10,0,-5));
-    points.emplace_back(glm::vec3(-6,-3,-5));
-    points.emplace_back(glm::vec3(-2,3,-5));
-    points.emplace_back(glm::vec3(2,0,-5));
-    points.emplace_back(glm::vec3(6,-5,-5));
-    points.emplace_back(glm::vec3(10,0,-5));
 
-    pointspoints.emplace_back(points);
-    points.clear();
+//    points.emplace_back(glm::vec3(-10,1,-7));
+//    points.emplace_back(glm::vec3(-6,-2,-7));
+//    points.emplace_back(glm::vec3(-2,2,-7));
+//    points.emplace_back(glm::vec3(2,-2,-7));
+//    points.emplace_back(glm::vec3(6,-4,-7));
+//    points.emplace_back(glm::vec3(10,1,-7));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
+//
+//    points.emplace_back(glm::vec3(-10,0,-5));
+//    points.emplace_back(glm::vec3(-6,-3,-5));
+//    points.emplace_back(glm::vec3(-2,3,-5));
+//    points.emplace_back(glm::vec3(2,0,-5));
+//    points.emplace_back(glm::vec3(6,-5,-5));
+//    points.emplace_back(glm::vec3(10,0,-5));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
+//
+//    points.emplace_back(glm::vec3(-10,5,-2));
+//    points.emplace_back(glm::vec3(-6,-2,-2));
+//    points.emplace_back(glm::vec3(-2,1,-2));
+//    points.emplace_back(glm::vec3(2,5,-2));
+//    points.emplace_back(glm::vec3(6,-3,-2));
+//    points.emplace_back(glm::vec3(10,0,-2));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
+//
+//    points.emplace_back(glm::vec3(-10,0,1));
+//    points.emplace_back(glm::vec3(-6,-3,1));
+//    points.emplace_back(glm::vec3(-2,3,1));
+//    points.emplace_back(glm::vec3(2,0,1));
+//    points.emplace_back(glm::vec3(6,-5,1));
+//    points.emplace_back(glm::vec3(10,0,1));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
+//
+//    points.emplace_back(glm::vec3(-10,-2,4));
+//    points.emplace_back(glm::vec3(-6,-5,4));
+//    points.emplace_back(glm::vec3(-2,-2,4));
+//    points.emplace_back(glm::vec3(2,0,4));
+//    points.emplace_back(glm::vec3(6,3,4));
+//    points.emplace_back(glm::vec3(10,0,4));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
+//
+//    points.emplace_back(glm::vec3(-10,4,7));
+//    points.emplace_back(glm::vec3(-6,3,7));
+//    points.emplace_back(glm::vec3(-2,-2,7));
+//    points.emplace_back(glm::vec3(2,-5,7));
+//    points.emplace_back(glm::vec3(6,0,7));
+//    points.emplace_back(glm::vec3(10,-1,7));
+//
+//    pointspoints.emplace_back(points);
+//    points.clear();
 
-    points.emplace_back(glm::vec3(-10,5,-2));
-    points.emplace_back(glm::vec3(-6,-2,-2));
-    points.emplace_back(glm::vec3(-2,1,-2));
-    points.emplace_back(glm::vec3(2,5,-2));
-    points.emplace_back(glm::vec3(6,-3,-2));
-    points.emplace_back(glm::vec3(10,0,-2));
+    for(int y = -10; y < 7; ++y) {
+        for(int x = -10; x < 10; ++x) {
+            points.emplace_back(glm::vec3(x,(rand()%20-10)/10.f,y));
+        }
+        pointspoints.emplace_back(points);
+        points.clear();
+    }
 
-    pointspoints.emplace_back(points);
-    points.clear();
 
-    points.emplace_back(glm::vec3(-10,0,1));
-    points.emplace_back(glm::vec3(-6,-3,1));
-    points.emplace_back(glm::vec3(-2,3,1));
-    points.emplace_back(glm::vec3(2,0,1));
-    points.emplace_back(glm::vec3(6,-5,1));
-    points.emplace_back(glm::vec3(10,0,1));
-
-    pointspoints.emplace_back(points);
-    points.clear();
-
-    points.emplace_back(glm::vec3(-10,-2,4));
-    points.emplace_back(glm::vec3(-6,-5,4));
-    points.emplace_back(glm::vec3(-2,-2,4));
-    points.emplace_back(glm::vec3(2,0,4));
-    points.emplace_back(glm::vec3(6,3,4));
-    points.emplace_back(glm::vec3(10,0,4));
-
-    pointspoints.emplace_back(points);
-    points.clear();
-
-    BSplineTensor bst(pointspoints, 2, 2);
+    BSplineTensor bst(pointspoints, 2, 2, REGULAR);
 
 //    int i = 0;
 //    for(const auto& p  : pointspoints) {
@@ -159,7 +189,6 @@ void Scene::create_tensor() {
             glm::vec3 p = bst.eval(u,v);
             points.emplace_back(p);
         }
-        std::cout << std::endl;
         pointspoints.emplace_back(points);
         points.clear();
     }

@@ -1,10 +1,22 @@
 #include "bspline.h"
 
-Bspline::Bspline(std::vector<glm::vec3> points, unsigned int degree) : _points{points}, _k{degree+1}  {
+Bspline::Bspline(std::vector<glm::vec3> points, unsigned int degree, Knots knotType) : _points{points}, _k{degree+1}  {
 
-    //vecteur uniforme
-    for(unsigned i=0; i<points.size()+_k+1; ++i){
-        _knots.emplace_back(i);
+    switch(knotType) {
+        case REGULAR : {
+            unsigned j = 0;
+            for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
+                _knots.emplace_back(j);
+                if(i >= degree and i < points.size()) {
+                    ++j;
+                }
+            }
+            break;
+        }
+        default :
+            for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
+                _knots.emplace_back(i);
+            }
     }
 
     _startInterval = _knots[degree];

@@ -4,11 +4,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
-#include <src/Object/surface.h>
 
-#include "src/Light/light.h"
-#include <src/Object/bspline.h>
-#include <src/Object/bsplinetensor.h>
+#include "src/Object/surface.h"
+#include "src/Light/pointlight.h"
+#include "src/Light/directionallight.h"
+#include "src/Object/bspline.h"
+#include "src/Object/bsplinetensor.h"
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
@@ -47,7 +48,8 @@ private:
     std::vector<std::unique_ptr<Line>> _lines;
     std::vector<std::unique_ptr<Surface>> _surfaces;
 
-    std::vector<std::unique_ptr<Light>> _lights;
+    std::vector<std::unique_ptr<PointLight>> _pointlights;
+    std::vector<std::unique_ptr<DirectionalLight>> _directionallights;
 };
 
 #endif //HENJIN_SCENE_H

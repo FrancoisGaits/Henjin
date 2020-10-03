@@ -12,9 +12,11 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     //place_XYZ();
     create_tensor();
 
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(5),glm::vec3(1,0,0)));
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(-5,5,-5),glm::vec3(0,1,0)));
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(0,5,5),glm::vec3(0,0,1)));
+
+    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,0),glm::vec3(0.5)));
+//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(5),glm::vec3(1,0,0)));
+//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5,5,-5),glm::vec3(0,1,0)));
+//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(0,5,5),glm::vec3(0,0,1)));
 
 }
 
@@ -38,12 +40,20 @@ void Scene::draw() {
     _shader.setMat4fv("projection", _projection);
 
     _shader.setVec3("cameraPos", _camera.position());
-    _shader.setInt("nbLight",_lights.size());
+    _shader.setInt("nbPointLight",_pointlights.size());
+    _shader.setInt("nbDirectionalLight",_directionallights.size());
 
     int i = 0;
-    for(const auto& light : _lights) {
-        _shader.setVec3("lights[" + std::to_string(i) + "].position", light->position());
-        _shader.setVec3("lights[" + std::to_string(i) + "].color", light->color());
+    for(const auto& light : _pointlights) {
+        _shader.setVec3("pointLights[" + std::to_string(i) + "].position", light->position());
+        _shader.setVec3("pointLights[" + std::to_string(i) + "].color", light->color());
+        ++i;
+    }
+
+    i = 0;
+    for(const auto& light : _directionallights) {
+        _shader.setVec3("directionalLights[" + std::to_string(i) + "].direction", light->direction());
+        _shader.setVec3("directionalLights[" + std::to_string(i) + "].color", light->color());
         ++i;
     }
 
@@ -174,7 +184,7 @@ void Scene::create_tensor() {
     }
 
 
-    BSplineTensor bst(pointspoints, 2, 2, REGULAR);
+    BSplineTensor bst(pointspoints, 3, 3, REGULAR);
 
 //    int i = 0;
 //    for(const auto& p  : pointspoints) {

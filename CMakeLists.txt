@@ -31,13 +31,28 @@ add_executable(${PROJECT_NAME} main.cpp
         src/scene.h
         src/shader.cpp
         src/shader.h
+
         src/camera.cpp
         src/camera.h
+
         src/Object/mesh.cpp
         src/Object/mesh.h
         src/Object/model.cpp
         src/Object/model.h
-        src/Light/light.cpp src/Light/light.h src/Object/line.cpp src/Object/line.h src/Object/bspline.cpp src/Object/bspline.h src/Object/bsplinetensor.cpp src/Object/bsplinetensor.h src/Object/surface.cpp src/Object/surface.h)
+        src/Object/bspline.cpp
+        src/Object/bspline.h
+        src/Object/bsplinetensor.cpp
+        src/Object/bsplinetensor.h
+        src/Object/line.cpp
+        src/Object/line.h
+        src/Object/surface.cpp
+        src/Object/surface.h
+
+
+        src/Light/pointlight.cpp 
+        src/Light/pointlight.h 
+        src/Light/directionallight.cpp 
+        src/Light/directionallight.h)
 
 
 set(EXT_LIBS Qt5::OpenGL ${OPENGL_LIBRARIES})

@@ -1,11 +1,11 @@
-#ifndef HENJIN_LIGHT_H
-#define HENJIN_LIGHT_H
+#ifndef HENJIN_POINTLIGHT_H
+#define HENJIN_POINTLIGHT_H
 
 #include <glm/glm.hpp>
 
-class Light {
+class PointLight {
 public:
-    Light(glm::vec3 position, glm::vec3 color);
+    PointLight(glm::vec3 position, glm::vec3 color);
 
     const glm::vec3& position() const;
     const glm::vec3& color() const;
@@ -18,4 +18,4 @@ private:
 };
 
 
-#endif //HENJIN_LIGHT_H
+#endif //HENJIN_POINTLIGHT_H

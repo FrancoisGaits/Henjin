@@ -1,4 +1,3 @@
-#include <src/Object/plane.h>
 #include "scene.h"
 
 Scene::Scene(int width, int height) : _width(width), _height(height) {
@@ -13,8 +12,10 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
     _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(0,1,0),100));
 
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(5),glm::vec3(0.8)));
-    _lights.emplace_back(std::make_unique<Light>(glm::vec3(-5,5,5),glm::vec3(0.8,0,0)));
+
+    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,0),glm::vec3(1)));
+//    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(5), glm::vec3(0.8)));
+//    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5, 5, 5), glm::vec3(0.8, 0, 0)));
 }
 
 void Scene::resize(int width, int height) {
@@ -36,12 +37,20 @@ void Scene::draw() {
     _shader.setMat4fv("projection", _projection);
 
     _shader.setVec3("cameraPos", _camera.position());
-    _shader.setInt("nbLight",_lights.size());
+    _shader.setInt("nbPointLight", _pointLights.size());
+    _shader.setInt("nbDirectionalLight", _directionalLights.size());
 
     int i = 0;
-    for(const auto& light : _lights) {
-        _shader.setVec3("lights[" + std::to_string(i) + "].position", light->position());
-        _shader.setVec3("lights[" + std::to_string(i) + "].color", light->color());
+    for(const auto& light : _pointLights) {
+        _shader.setVec3("pointLights[" + std::to_string(i) + "].position", light->position());
+        _shader.setVec3("pointLights[" + std::to_string(i) + "].color", light->color());
+        ++i;
+    }
+
+    i = 0;
+    for(const auto& light : _directionalLights) {
+        _shader.setVec3("directionalLights[" + std::to_string(i) + "].direction", light->direction());
+        _shader.setVec3("directionalLights[" + std::to_string(i) + "].color", light->color());
         ++i;
     }
 

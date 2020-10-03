@@ -5,7 +5,9 @@
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
 
-#include "src/Light/light.h"
+#include "src/Object/plane.h"
+#include "src/Light/directionallight.h"
+#include "src/Light/pointlight.h"
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
@@ -36,7 +38,8 @@ private:
     Shader _shader;
 
     std::vector<std::unique_ptr<Shape>> _objects;
-    std::vector<std::unique_ptr<Light>> _lights;
+    std::vector<std::unique_ptr<PointLight>> _pointLights;
+    std::vector<std::unique_ptr<DirectionalLight>> _directionalLights;
 };
 
 #endif //HENJIN_SCENE_H

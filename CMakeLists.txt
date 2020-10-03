@@ -37,7 +37,7 @@ add_executable(${PROJECT_NAME} main.cpp
         src/Object/mesh.h
         src/Object/model.cpp
         src/Object/model.h
-        src/Light/light.cpp src/Light/light.h src/Object/shape.cpp src/Object/shape.h src/Object/plane.cpp src/Object/plane.h)
+        src/Light/pointlight.cpp src/Light/pointlight.h src/Object/shape.cpp src/Object/shape.h src/Object/plane.cpp src/Object/plane.h src/Light/directionallight.cpp src/Light/directionallight.h)
 
 
 set(EXT_LIBS Qt5::OpenGL ${OPENGL_LIBRARIES})

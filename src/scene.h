@@ -19,7 +19,7 @@ public:
     ~Scene() = default;
 
     void resize(int width, int height);
-    void draw();
+    void draw(GLint qt_framebuffer);
 
     void click(unsigned button, int x, int y);
     void move(int x, int y);
@@ -29,17 +29,28 @@ private:
     int _width;
     int _height;
 
+    const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+
     unsigned _button;
+
 
     glm::mat4 _view{};
     glm::mat4 _projection{};
 
     Camera _camera;
     Shader _shader;
+    Shader _shadowShader = Shader(true);
 
     std::vector<std::unique_ptr<Shape>> _objects;
     std::vector<std::unique_ptr<PointLight>> _pointLights;
     std::vector<std::unique_ptr<DirectionalLight>> _directionalLights;
+
+    std::vector<GLuint> _depthMapFBOs;
+    std::vector<GLuint> _depthMaps;
+
+    void setupObjects();
+    void setupLights();
+    void setupShadows();
 };
 
 #endif //HENJIN_SCENE_H

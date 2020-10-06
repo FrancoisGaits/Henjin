@@ -1,8 +1,8 @@
 #include "shader.h"
 
-Shader::Shader() {
-    std::string vertexPath("../shaders/shader.vs");
-    std::string fragmentPath("../shaders/shader.fs");
+Shader::Shader(bool shadows) {
+    std::string vertexPath(shadows ? "../shaders/shadows.vs" : "../shaders/shader.vs");
+    std::string fragmentPath(shadows ? "../shaders/shadows.fs" : "../shaders/shader.fs");
 
     std::string vertexCode;
     std::string fragmentCode;

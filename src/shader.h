@@ -23,7 +23,7 @@
 class Shader {
 
 public:
-    explicit Shader();
+    explicit Shader(bool shadows = false);
 
     void use();
 

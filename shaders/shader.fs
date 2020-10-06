@@ -2,6 +2,7 @@
 
 #define N_MAX_POINT_LIGHT 16
 #define N_MAX_DIR_LIGHT 4
+#define EPSILON 0.01
 
 struct PointLight {
     vec3 position;
@@ -25,8 +26,9 @@ const vec3 Fdielctric = vec3(0.04);
 uniform vec3 cameraPos;
 uniform int nbPointLight;
 uniform int nbDirectionalLight;
+uniform int shadowMapSize;
 
-uniform sampler2D shadowMaps[N_MAX_DIR_LIGHT];
+uniform sampler2DShadow shadowMaps[N_MAX_DIR_LIGHT];
 
 uniform PointLight pointLights[N_MAX_POINT_LIGHT];
 uniform DirectionalLight directionalLights[N_MAX_DIR_LIGHT];
@@ -35,19 +37,34 @@ uniform DirectionalLight directionalLights[N_MAX_DIR_LIGHT];
 
 out vec4 color;
 
-float shadow(vec4 fragPosLight, sampler2D shadowMap) {
+float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
     // perform perspective divide
     vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth - 0.01 > closestDepth  ? 1.0 : 0.0;
+//    float closestDepth = texture(shadowMap, projCoords.xyz);
+//    // get depth of current fragment from light's perspective
+//    float currentDepth = projCoords.z;
+//    // check whether current frag pos is in shadow
+//    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
-    return shadow;
+    float Offset = 1.0/shadowMapSize;
+    float yOffset = 1.0/shadowMapSize;
+
+    float Factor = 0.0;
+
+    for (int y = -1 ; y <= 1 ; y++) {
+        for (int x = -1 ; x <= 1 ; x++) {
+            vec2 Offsets = vec2(x * Offset, y * Offset);
+            vec3 UVC = vec3(projCoords.xy + Offsets, projCoords.z - EPSILON);
+            Factor += texture(shadowMap, UVC);
+        }
+    }
+
+    return (0.5 + (Factor / 9.0));
+
+    //return shadow;
 }
 
 vec3 fresnel(vec3 F, float cos) {
@@ -149,7 +166,7 @@ void main() {
 
         float sha = shadow(fragPosLight[i],shadowMaps[i]);
 
-        direct += (1.0 - sha) * ((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL);
+        direct += sha * clamp(((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL),0.f,1.f);
     }
 
     vec3 ambiant = vec3(0.02) * fragColor * normalize(totalcolor);

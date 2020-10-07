@@ -166,10 +166,17 @@ void main() {
 
         float sha = shadow(fragPosLight[i],shadowMaps[i]);
 
-        direct += sha * clamp(((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL),0.f,1.f);
+        direct += sha * ((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL);
     }
 
-    vec3 ambiant = vec3(0.05) * fragColor * normalize(totalcolor);
+    vec3 ambiant = vec3(0.01) * fragColor * normalize(totalcolor);
 
-    color = vec4(direct + ambiant,1.0);
+    vec3 hdr = direct + ambiant;
+
+    vec3 mapped = vec3(1.0) - exp(-hdr);
+//    vec3 mapped = hdr / (vec3(1) + hdr);
+    mapped = pow(mapped, vec3(1/2.4));
+
+
+    color = vec4(mapped,1);
 }

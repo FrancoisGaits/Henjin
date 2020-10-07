@@ -122,9 +122,9 @@ void Scene::setupObjects() {
 }
 
 void Scene::setupLights() {
-    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1)));
-    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1)));
- //   _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1)));
+    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
+//    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(0,1,0)));
+//    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(0,0,1)));
 //    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(5), glm::vec3(0.8)));
 //    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5, 5, 5), glm::vec3(0.8, 0, 0)));
 }

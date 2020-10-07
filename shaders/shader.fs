@@ -62,7 +62,7 @@ float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
         }
     }
 
-    return (0.5 + (Factor / 9.0));
+    return (Factor / 9.0);
 
     //return shadow;
 }
@@ -169,7 +169,7 @@ void main() {
         direct += sha * clamp(((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL),0.f,1.f);
     }
 
-    vec3 ambiant = vec3(0.02) * fragColor * normalize(totalcolor);
+    vec3 ambiant = vec3(0.05) * fragColor * normalize(totalcolor);
 
     color = vec4(direct + ambiant,1.0);
 }

@@ -6,7 +6,7 @@
 
 enum Knots {
     UNIFORM,
-    REGULAR
+    OPEN
 };
 
 class Bspline {

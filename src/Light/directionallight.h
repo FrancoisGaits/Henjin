@@ -2,6 +2,7 @@
 #define HENJIN_DIRECTIONALLIGHT_H
 
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 class DirectionalLight {
 public:
@@ -10,6 +11,7 @@ public:
     const glm::vec3& direction() const;
     const glm::vec3& color() const;
 
+    glm::mat4 lightSpaceMatrix() const;
 
 private:
     glm::vec3 _direction;

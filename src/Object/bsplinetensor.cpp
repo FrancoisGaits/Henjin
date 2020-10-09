@@ -1,3 +1,4 @@
+#include <iostream>
 #include "bsplinetensor.h"
 
 BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV, Knots knotType) : _points{points} {
@@ -9,7 +10,7 @@ BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsign
     _k = degreeU+1;
 
     switch(knotType) {
-        case REGULAR : {
+        case OPEN : {
             unsigned j = 0;
             for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
                 _knots.emplace_back(j);
@@ -17,6 +18,7 @@ BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsign
                     ++j;
                 }
             }
+
             break;
         }
         default :
@@ -36,7 +38,7 @@ BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsign
 }
 
 
-glm::vec3 BSplineTensor::eval(float u, float v) {
+glm::vec3 BSplineTensor::eval(float u, float v) const {
     std::vector<glm::vec3> points;
     for(const auto & bspline : _genBspline) {
         points.emplace_back(bspline.eval(v));
@@ -69,17 +71,17 @@ glm::vec3 BSplineTensor::eval(float u, float v) {
     return pTemp[0];
 }
 
-float BSplineTensor::startUInterval() {
+float BSplineTensor::startUInterval() const {
     return _startUInterval;
 }
-float BSplineTensor::startVInterval() {
+float BSplineTensor::startVInterval() const {
     return _startVInterval;
 }
 
-float BSplineTensor::endUInterval() {
+float BSplineTensor::endUInterval() const {
     return _endUInterval;
 }
-float BSplineTensor::endVInterval() {
+float BSplineTensor::endVInterval() const {
     return _endVInterval;
 }
 

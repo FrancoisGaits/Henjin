@@ -11,12 +11,10 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     //place_XYZ();
     create_tensor();
+    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,1,-1),glm::vec3(1,0.5,0.5)));
+    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,-1,-1),glm::vec3(1,0.5,0.5)));
 
-
-    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,0),glm::vec3(0.5)));
-//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(5),glm::vec3(1,0,0)));
-//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5,5,-5),glm::vec3(0,1,0)));
-//    _pointlights.emplace_back(std::make_unique<PointLight>(glm::vec3(0,5,5),glm::vec3(0,0,1)));
+    setupShadow();
 
 }
 
@@ -27,10 +25,36 @@ void Scene::resize(int width, int height) {
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 }
 
-void Scene::draw() {
+void Scene::draw(GLuint qt_buffer) {
     glClearColor(1.f,1.f,1.f,1.0f);
-    glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    unsigned i = 0;
+
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
+    for(const auto & light : _directionallights) {
+        GLuint fbo = _depthMapFBOs[i];
+        glm::mat4 lightSpaceMatrix = light->lightSpaceMatrix();
+
+        _shadowShader.use();
+        _shadowShader.setMat4fv("lightSpaceMatrix", lightSpaceMatrix);
+
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for(const auto &object : _surfaces) {
+            _shadowShader.setMat4fv("model", object->model());
+            object->draw();
+        }
+
+        ++i;
+    }
+
+
+    //actual render
+    glViewport(0,0,_width,_height);
+    glBindFramebuffer(GL_FRAMEBUFFER, qt_buffer);
 
     _view = _camera.viewmatrix();
 
@@ -42,8 +66,9 @@ void Scene::draw() {
     _shader.setVec3("cameraPos", _camera.position());
     _shader.setInt("nbPointLight",_pointlights.size());
     _shader.setInt("nbDirectionalLight",_directionallights.size());
+    _shader.setInt("nbDirLights", _directionallights.size());
 
-    int i = 0;
+    i = 0;
     for(const auto& light : _pointlights) {
         _shader.setVec3("pointLights[" + std::to_string(i) + "].position", light->position());
         _shader.setVec3("pointLights[" + std::to_string(i) + "].color", light->color());
@@ -54,12 +79,17 @@ void Scene::draw() {
     for(const auto& light : _directionallights) {
         _shader.setVec3("directionalLights[" + std::to_string(i) + "].direction", light->direction());
         _shader.setVec3("directionalLights[" + std::to_string(i) + "].color", light->color());
+        _shader.setMat4fv("lightSpaceModels[" + std::to_string(i) + "]", light->lightSpaceMatrix());
         ++i;
     }
 
-    for(const auto &object : _objects) {
-        _shader.setMat4fv("model", object->model());
-        object->draw();
+
+
+    i = 0;
+    for(const auto & depthMap : _depthMaps) {
+        glActiveTexture(GL_TEXTURE0+i);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        ++i;
     }
 
     for(const auto &line : _lines) {
@@ -72,6 +102,11 @@ void Scene::draw() {
         _shader.setMat4fv("model", surface->model());
         _shader.setVec3("color", surface->color());
         surface->draw();
+    }
+
+    for(const auto &object : _objects) {
+        _shader.setMat4fv("model", object->model());
+        object->draw();
     }
 
 
@@ -102,7 +137,7 @@ void Scene::create_bspline() {
 
     std::vector<glm::vec3> points_bs;
     Bspline bs(points,2);
-    float pas = 0.1f;
+    float pas = 0.5f;
     for(float u=bs.startInterval(); u<bs.endInterval(); u+=pas){
         points_bs.emplace_back(bs.eval(u));
     }
@@ -184,7 +219,7 @@ void Scene::create_tensor() {
     }
 
 
-    BSplineTensor bst(pointspoints, 3, 3, REGULAR);
+    BSplineTensor bst(pointspoints, 3, 3, OPEN);
 
 //    int i = 0;
 //    for(const auto& p  : pointspoints) {
@@ -192,18 +227,7 @@ void Scene::create_tensor() {
 //    }
 
 
-    pointspoints.clear();
-
-    for(float u = bst.startUInterval(); u < bst.endUInterval(); u+=0.05) {
-        for(float v = bst.startVInterval(); v < bst.endVInterval(); v += 0.05) {
-            glm::vec3 p = bst.eval(u,v);
-            points.emplace_back(p);
-        }
-        pointspoints.emplace_back(points);
-        points.clear();
-    }
-
-    _surfaces.emplace_back(std::make_unique<Surface>(pointspoints,glm::vec3(1)));
+    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.05f,glm::vec3(1,0.5,1),0.5f));
 }
 
 void Scene::place_XYZ() {
@@ -215,5 +239,42 @@ void Scene::place_XYZ() {
     _lines.emplace_back(std::make_unique<Line>(Y, true, glm::vec3(0,1,0)));
     _lines.emplace_back(std::make_unique<Line>(Z, true, glm::vec3(0,0,1)));
 
+
+}
+
+void Scene::setupShadow() {
+    unsigned i = 0;
+
+    _shader.use();
+    for(const auto & light : _directionallights) {
+        _depthMapFBOs.emplace_back(0);
+        _depthMaps.emplace_back(0);
+        glGenFramebuffers(1, &_depthMapFBOs.back());
+
+        // create depth texture
+        glGenTextures(1, &_depthMaps.back());
+        glBindTexture(GL_TEXTURE_2D, _depthMaps.back());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+                     nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+        // attach depth texture as FBO's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBOs.back());
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthMaps.back(), 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        _shader.setInt("shadowMaps["+std::to_string(i)+"]", i);
+
+        ++i;
+    }
+    _shader.setInt("shadowMapSize", static_cast<int>(SHADOW_HEIGHT));
 
 }

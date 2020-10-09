@@ -4,10 +4,14 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "mesh.h"
+#include "bsplinetensor.h"
 
 class Surface {
 public:
-    explicit Surface(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color = glm::vec3(0));
+    explicit Surface(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color = glm::vec3(1), float offset = 0.5f);
+    explicit Surface(const BSplineTensor& tensor, float pas, glm::vec3 color = glm::vec3(1), float offset = 0.5f);
+
+    void init(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color, float offset);
 
     void draw() const;
 

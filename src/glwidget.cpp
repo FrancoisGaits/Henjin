@@ -37,7 +37,7 @@ void GlWidget::paintGL() {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    _scene->draw();
+    _scene->draw(context()->defaultFramebufferObject());
     glFinish();
 
 }

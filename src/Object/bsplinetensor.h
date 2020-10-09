@@ -10,13 +10,13 @@ class BSplineTensor {
 public:
     explicit  BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV, Knots knotsType=UNIFORM);
 
-    glm::vec3 eval(float u, float v);
+    glm::vec3 eval(float u, float v) const;
 
-    float startUInterval();
-    float startVInterval();
+    float startUInterval() const;
+    float startVInterval() const;
 
-    float endUInterval();
-    float endVInterval();
+    float endUInterval() const;
+    float endVInterval() const;
 
 private:
     std::vector<std::vector<glm::vec3>> _points;

@@ -22,7 +22,7 @@ public:
     ~Scene() = default;
 
     void resize(int width, int height);
-    void draw();
+    void draw(GLuint qt_buffer);
 
     void click(unsigned button, int x, int y);
     void move(int x, int y);
@@ -30,11 +30,15 @@ public:
 private:
     void create_bspline();
     void create_tensor();
+    void setupShadow();
 
     void place_XYZ();
 
     int _width;
     int _height;
+
+    const unsigned SHADOW_WIDTH = 2048;
+    const unsigned SHADOW_HEIGHT = 2048;
 
     unsigned _button;
 
@@ -43,10 +47,14 @@ private:
 
     Camera _camera;
     Shader _shader;
+    Shader _shadowShader = Shader(true);
 
     std::vector<std::unique_ptr<Model>> _objects;
     std::vector<std::unique_ptr<Line>> _lines;
     std::vector<std::unique_ptr<Surface>> _surfaces;
+
+    std::vector<GLuint> _depthMapFBOs;
+    std::vector<GLuint> _depthMaps;
 
     std::vector<std::unique_ptr<PointLight>> _pointlights;
     std::vector<std::unique_ptr<DirectionalLight>> _directionallights;

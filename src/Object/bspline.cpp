@@ -3,7 +3,7 @@
 Bspline::Bspline(std::vector<glm::vec3> points, unsigned int degree, Knots knotType) : _points{points}, _k{degree+1}  {
 
     switch(knotType) {
-        case REGULAR : {
+        case OPEN : {
             unsigned j = 0;
             for (unsigned i = 0; i < points.size() + _k + 1; ++i) {
                 _knots.emplace_back(j);

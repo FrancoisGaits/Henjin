@@ -1,4 +1,6 @@
 #include "scene.h"
+#include <random>
+
 
 Scene::Scene(int width, int height) : _width(width), _height(height) {
     glEnable(GL_DEPTH_TEST);
@@ -11,8 +13,8 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     //place_XYZ();
     create_tensor();
-    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,1,-1),glm::vec3(1,0.5,0.5)));
-    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,-1,-1),glm::vec3(1,0.5,0.5)));
+    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,1,-1),glm::vec3(1,1,1)));
+    _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,-1,-1),glm::vec3(1,1,1)));
 
     setupShadow();
 
@@ -210,9 +212,13 @@ void Scene::create_tensor() {
 //    pointspoints.emplace_back(points);
 //    points.clear();
 
-    for(int y = -10; y < 7; ++y) {
-        for(int x = -10; x < 10; ++x) {
-            points.emplace_back(glm::vec3(x,(rand()%20-10)/10.f,y));
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(-25, 25);
+    for(int y = -15; y < 10; ++y) {
+        for(int x = -14; x < 14; ++x) {
+            points.emplace_back(glm::vec3(x,(distrib(gen)/10.f),y));
         }
         pointspoints.emplace_back(points);
         points.clear();
@@ -227,7 +233,7 @@ void Scene::create_tensor() {
 //    }
 
 
-    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.05f,glm::vec3(1,0.5,1),0.5f));
+    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.10f,glm::vec3(1,0.766,0.336),0.8f));
 }
 
 void Scene::place_XYZ() {
@@ -278,3 +284,10 @@ void Scene::setupShadow() {
     _shader.setInt("shadowMapSize", static_cast<int>(SHADOW_HEIGHT));
 
 }
+
+void Scene::handleZoom(bool positive) {
+
+    positive ? _camera.forward() : _camera.backward();
+
+}
+

@@ -2,6 +2,7 @@
 #define HENJIN_MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
+#include <QScreen>
 #include "glwidget.h"
 
 namespace Ui {
@@ -19,10 +20,16 @@ private:
     Ui::MainWindow *ui;
     GlWidget *glWidget;
 
+    void resizeWindow(int width, int height);
 
 private slots:
 
+    void resizeEvent(QResizeEvent* event) override;
+
     void on_actionOpenGl_Info_triggered();
+    void on_actionClose_triggered();
+    void on_actionFullScreen_triggered();
+    void on_actionNormal_triggered();
 
 };
 

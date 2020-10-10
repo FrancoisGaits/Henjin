@@ -29,11 +29,35 @@
     </property>
     <addaction name="actionOpenGl_Info"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionFullScreen"/>
+    <addaction name="actionNormal"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <addaction name="menuWindow"/>
    <addaction name="menuInfos"/>
   </widget>
   <action name="actionOpenGl_Info">
    <property name="text">
     <string>OpenGl Info</string>
+   </property>
+  </action>
+  <action name="actionFullScreen">
+   <property name="text">
+    <string>FullScreen</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionNormal">
+   <property name="text">
+    <string>Normal</string>
    </property>
   </action>
  </widget>

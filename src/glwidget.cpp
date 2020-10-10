@@ -43,7 +43,7 @@ void GlWidget::paintGL() {
 }
 
 void GlWidget::resizeGL(int width, int height) {
-
+    _scene->resize(width,height);
 }
 
 GlWidget::~GlWidget() {
@@ -56,6 +56,13 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
             _lines = !_lines;
             update();
             break;
+        case Qt::Key_Plus:
+            _scene->handleZoom(true);
+            update();
+            break;
+        case Qt::Key_Minus:
+            _scene->handleZoom(false);
+            update();
         default:
             break;
     }

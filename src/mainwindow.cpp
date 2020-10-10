@@ -4,6 +4,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 
+    //setWindowFlags(Qt::FramelessWindowHint| Qt::WindowSystemMenuHint);
+
     QSurfaceFormat format;
     format.setVersion(4, 1);
     format.setProfile(QSurfaceFormat::CoreProfile);
@@ -39,4 +41,28 @@ void MainWindow::on_actionOpenGl_Info_triggered() {
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::on_actionFullScreen_triggered() {
+
+    showFullScreen();
+}
+
+void MainWindow::on_actionClose_triggered() {
+    QMainWindow::close();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    resizeWindow(event->size().width(),event->size().height());
+
+}
+
+void MainWindow::resizeWindow(int width, int height) {
+    glWidget->resize(width,height);
+
+}
+
+void MainWindow::on_actionNormal_triggered() {
+    showNormal();
 }

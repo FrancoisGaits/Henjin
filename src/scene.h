@@ -27,6 +27,8 @@ public:
     void click(unsigned button, int x, int y);
     void move(int x, int y);
 
+    void handleZoom(bool positive);
+
 private:
     void create_bspline();
     void create_tensor();

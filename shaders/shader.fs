@@ -102,8 +102,8 @@ void main() {
 //    color = vec4( clamp( dot( normalize(normal), normalize(lightPos-fragPosWorld)), 0, 1 ) * lightColor, 1.0);
 
     vec3 albedo = vec3(1);
-    float metalness = 1;
-    float roughness = 0.3;
+    float metalness = 0;
+    float roughness = 0;
 
     vec3 view = normalize(cameraPos - fragPosWorld);
 
@@ -160,7 +160,7 @@ void main() {
 
         float sha = shadow(fragPosLight[i],shadowMaps[i]);
 
-        direct += sha * ((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL);
+        direct += sha * (specular + ( (vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL;
     }
 
     vec3 ambiant = vec3(0.01) * fragColor;

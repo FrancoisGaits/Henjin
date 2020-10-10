@@ -20,11 +20,15 @@ public :
     void click(unsigned button, int x, int y);
     void move(int x, int y);
 
+    void forward();
+    void backward();
+
 
 private:
     glm::vec3 _position;
     glm::vec3 _front;
     glm::vec3 _up;
+    glm::vec3 _look;
 
     float _speed;
     float _sensitivity;

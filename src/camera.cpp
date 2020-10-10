@@ -4,6 +4,7 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 look, float zoom) :  _position(position),
                                                                                 _front(look - position),
                                                                                 _up(up),
+                                                                                _look(look),
                                                                                 _speed(5.f),
                                                                                 _sensitivity(2.f),
                                                                                 _zoom(zoom) {
@@ -113,6 +114,16 @@ void Camera::panCamera() {
         _panStart = _panEnd;
     }
 
+}
+
+void Camera::forward() {
+    _position += _front*0.1f*_speed;
+    _radius = glm::length(_look-_position);
+}
+
+void Camera::backward() {
+    _position -= _front*0.1f*_speed;
+    _radius = glm::length(_look-_position);
 }
 
 

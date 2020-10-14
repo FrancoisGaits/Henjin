@@ -29,7 +29,8 @@ private:
     int _width;
     int _height;
 
-    const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+    const unsigned SHADOW_WIDTH = 2048;
+    const unsigned SHADOW_HEIGHT = 2048;
 
     unsigned _button;
 

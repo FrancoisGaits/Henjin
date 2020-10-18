@@ -3,7 +3,10 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QScreen>
+#include <QColorDialog>
+#include <QColor>
 #include "glwidget.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -30,6 +33,7 @@ private slots:
     void on_actionClose_triggered();
     void on_actionFullScreen_triggered();
     void on_actionNormal_triggered();
+    void on_actionSet_Surface_Color_triggered();
 
 };
 

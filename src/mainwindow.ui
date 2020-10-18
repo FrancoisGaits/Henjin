@@ -13,14 +13,28 @@
   <property name="windowTitle">
    <string>Henjin</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>66</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>1152</width>
-     <height>20</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuInfos">
@@ -37,7 +51,14 @@
     <addaction name="actionNormal"/>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menuColor">
+    <property name="title">
+     <string>Color</string>
+    </property>
+    <addaction name="actionSet_Surface_Color"/>
+   </widget>
    <addaction name="menuWindow"/>
+   <addaction name="menuColor"/>
    <addaction name="menuInfos"/>
   </widget>
   <action name="actionOpenGl_Info">
@@ -58,6 +79,16 @@
   <action name="actionNormal">
    <property name="text">
     <string>Normal</string>
+   </property>
+  </action>
+  <action name="actionColor_Dialog">
+   <property name="text">
+    <string>Color Dialog</string>
+   </property>
+  </action>
+  <action name="actionSet_Surface_Color">
+   <property name="text">
+    <string>Set Surface Color</string>
    </property>
   </action>
  </widget>

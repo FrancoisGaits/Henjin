@@ -27,6 +27,9 @@ uniform vec3 cameraPos;
 uniform int nbPointLight;
 uniform int nbDirectionalLight;
 uniform int shadowMapSize;
+uniform int exposure;
+uniform float metalness;
+uniform float roughness;
 
 uniform sampler2DShadow shadowMaps[N_MAX_DIR_LIGHT];
 
@@ -102,8 +105,6 @@ void main() {
 //    color = vec4( clamp( dot( normalize(normal), normalize(lightPos-fragPosWorld)), 0, 1 ) * lightColor, 1.0);
 
     vec3 albedo = vec3(1);
-    float metalness = 0;
-    float roughness = 0;
 
     vec3 view = normalize(cameraPos - fragPosWorld);
 
@@ -168,7 +169,7 @@ void main() {
     vec3 hdr = direct+ambiant;
 
 
-    vec3 mapped = hdr / (vec3(1) + hdr);
+    vec3 mapped = hdr*exposure / (vec3(1) + hdr);
     mapped = pow(mapped, vec3(1.f/2.2));
 
 

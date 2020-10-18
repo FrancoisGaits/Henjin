@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions_4_1_Core>
 #include <memory>
 #include <QKeyEvent>
+#include <QLabel>
 
 #include "scene.h"
 
@@ -18,6 +19,8 @@ public:
 
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
+
+    void setSurfaceColor(glm::vec3 color);
 
 public slots:
     void cleanup();
@@ -33,9 +36,17 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 
+
 private:
+    void updateDisplay();
+
     std::unique_ptr<Scene> _scene;
     bool _lines;
+    bool _dis;
+
+    QLabel* display;
+    float _m;
+    float _r;
 
 };
 

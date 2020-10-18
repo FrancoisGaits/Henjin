@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
 
     glWidget = new GlWidget(ui->centralwidget);
-    glWidget->resize(glWidget->sizeHint());
     glWidget->setFocus();
+
 
 
 }
@@ -41,10 +41,10 @@ void MainWindow::on_actionOpenGl_Info_triggered() {
 
 MainWindow::~MainWindow() {
     delete ui;
+    delete glWidget;
 }
 
 void MainWindow::on_actionFullScreen_triggered() {
-
     showFullScreen();
 }
 
@@ -65,4 +65,16 @@ void MainWindow::resizeWindow(int width, int height) {
 
 void MainWindow::on_actionNormal_triggered() {
     showNormal();
+}
+
+void MainWindow::on_actionSet_Surface_Color_triggered() {
+    QColor color = QColorDialog::getColor(Qt::white, this);
+
+    if(!color.isValid()) {
+        return;
+    }
+
+    glm::vec3 newColor(glm::vec3(color.red()/255.f,color.green()/255.f,color.blue()/255.f));
+
+    glWidget->setSurfaceColor(newColor);
 }

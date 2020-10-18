@@ -1,7 +1,10 @@
 
 #include "glwidget.h"
 
-GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent), _lines{false}{
+GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent), _lines{false}, _dis{false}{
+
+
+    display = new QLabel("",this);
 
 }
 
@@ -28,6 +31,11 @@ void GlWidget::initializeGL() {
     makeCurrent();
     _scene = std::make_unique<Scene>(sizeHint().width(), sizeHint().height());
     doneCurrent();
+
+    _m = _scene->getSurfaceMetalness();
+    _r = _scene->getSurfaceRoughness();
+    updateDisplay();
+    display->setVisible(_dis);
 }
 
 void GlWidget::paintGL() {
@@ -63,12 +71,37 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Minus:
             _scene->handleZoom(false);
             update();
+            break;
+
+        case Qt::Key_I:
+            _m = _scene->changeSurfaceMetalness(false);
+            update();
+            updateDisplay();
+            break;
+        case Qt::Key_O:
+            _m = _scene->changeSurfaceMetalness(true);
+            update();
+            updateDisplay();
+            break;
+        case Qt::Key_K:
+            _r = _scene->changeSurfaceRoughness(false);
+            update();
+            updateDisplay();
+            break;
+        case Qt::Key_L:
+            _r = _scene->changeSurfaceRoughness(true);
+            update();
+            updateDisplay();
+            break;
+        case Qt::Key_D:
+            _dis = !_dis;
+            display->setVisible(_dis);
+            updateDisplay();
+            break;
+
         default:
             break;
     }
-
-    std::cout << event->key() << std::endl;
-
 }
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -91,4 +124,18 @@ void GlWidget::mousePressEvent(QMouseEvent *event) {
     }
 
     _scene->click(b,event->x(),event->y());
+}
+
+void GlWidget::setSurfaceColor(glm::vec3 color) {
+    _scene->setSurfaceColor(color);
+    update();
+}
+
+void GlWidget::updateDisplay() {
+
+    std::stringstream s;
+    s << "Metalness : " << _m << "    " << std::endl;
+    s << "Roughness : " << _r << "    ";
+
+    display->setText(s.str().c_str());
 }

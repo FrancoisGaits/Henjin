@@ -3,7 +3,8 @@
 #include "surface.h"
 
 
-Surface::Surface(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 color, float offset) : _color{color}{
+Surface::Surface(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 color, float offset, float metalness, float roughness) : _metalness(metalness), _roughness(roughness){
+    _color = glm::pow(color,glm::vec3(2.2f));
     _model = glm::mat4(1.f);
 
     init(points,color,offset);
@@ -11,7 +12,8 @@ Surface::Surface(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 co
 }
 
 
-Surface::Surface(const BSplineTensor &tensor, float pas, glm::vec3 color, float offset) : _color{color} {
+Surface::Surface(const BSplineTensor &tensor, float pas, glm::vec3 color, float offset, float metalness, float roughness) : _metalness(metalness), _roughness(roughness) {
+    _color = glm::pow(color,glm::vec3(2.2f));
     _model = glm::mat4(1.f);
 
     std::vector<std::vector<glm::vec3>> pointspoints;
@@ -36,6 +38,7 @@ Surface::Surface(const BSplineTensor &tensor, float pas, glm::vec3 color, float 
 
 
 const glm::vec3 &Surface::color() const {
+
     return _color;
 }
 
@@ -51,6 +54,7 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
     std::vector<glm::vec3> normals;
     std::vector<glm::vec3> vertices;
 
+    std::vector<Quad> savedQuads;
 
     for(const auto& line : points) {
         for(const auto& p : line) {
@@ -63,14 +67,14 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
         for (const auto &line : points) {
             for (const auto &p : line) {
                 mesh.addVertex(p - glm::vec3(0, offset, 0));
-                vertices.emplace_back(p);
+                vertices.emplace_back(p - glm::vec3(0, offset, 0));
                 normals.emplace_back(glm::vec3(0));
             }
         }
     }
 
     unsigned n = points.back().size();
-    unsigned long nb_points = n*points.size();
+    unsigned nb_points = n*points.size();
 
     for(unsigned x = 0; x<n-1; ++x) {
         for(unsigned y = 0; y<points.size()-1; ++y) {
@@ -82,22 +86,26 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
 
             if(offset > 0.f) {
                 if (x == 0) {
-                    mesh.addQuad(a, c, a + nb_points, c + nb_points);
+//                    mesh.addQuad(a, c, a + nb_points, c + nb_points);
+                    savedQuads.emplace_back(Quad{a,c,a+nb_points, c+nb_points});
                 } else if (x == n - 2) {
-                    mesh.addQuad(d, b, d + nb_points, b + nb_points);
+//                    mesh.addQuad(d, b, d + nb_points, b + nb_points);
+                    savedQuads.emplace_back(Quad{d,b,d+nb_points, b+nb_points});
                 }
 
                 if (y == 0) {
-                    mesh.addQuad(a, b, a + nb_points, b + nb_points);
-                } else if (points.size() - 2) {
-                    mesh.addQuad(d, c, d + nb_points, c + nb_points);
+//                    mesh.addQuad(a, b, a + nb_points, b + nb_points);
+                    savedQuads.emplace_back(Quad{a,b,a+nb_points, b+nb_points});
+                } else if (y == points.size() - 2) {
+//                    mesh.addQuad(d, c, d + nb_points, c + nb_points);
+                    savedQuads.emplace_back(Quad{d,c,d+nb_points, c+nb_points});
                 }
             }
 
 
 
             glm::vec3 normalLower = glm::cross(vertices[a]-vertices[d],vertices[c]-vertices[d]);
-            glm::vec3 normalUpper = glm::cross(vertices[a]-vertices[b],vertices[c]-vertices[b]);
+            glm::vec3 normalUpper = glm::cross(vertices[d]-vertices[a],vertices[b]-vertices[a]);
 
 
             normals[a] += normalLower;
@@ -105,7 +113,7 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
             normals[d] += normalLower;
 
             normals[a] += normalUpper;
-            normals[c] += normalUpper;
+            normals[d] += normalUpper;
             normals[b] += normalUpper;
         }
     }
@@ -121,7 +129,7 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
                 mesh.addQuad(a, b, c, d);
 
                 glm::vec3 normalLower = glm::cross(vertices[a] - vertices[d], vertices[c] - vertices[d]);
-                glm::vec3 normalUpper = glm::cross(vertices[a] - vertices[b], vertices[c] - vertices[b]);
+                glm::vec3 normalUpper = glm::cross(vertices[d]-vertices[a],vertices[b]-vertices[a]);
 
 
                 normals[a] -= normalLower;
@@ -129,7 +137,7 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
                 normals[d] -= normalLower;
 
                 normals[a] -= normalUpper;
-                normals[c] -= normalUpper;
+                normals[d] -= normalUpper;
                 normals[b] -= normalUpper;
             }
         }
@@ -139,7 +147,41 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
         mesh.addNormal(p);
     }
 
+    unsigned i = mesh.nbVertices();
+    for(const auto & quad : savedQuads) {
+        glm::vec3 normal = glm::cross(vertices[quad.c]-vertices[quad.a],vertices[quad.d]-vertices[quad.a]);
+        normal.z = -normal.z;
+
+        mesh.addNormal(normal);
+        mesh.addNormal(normal);
+        mesh.addNormal(normal);
+        mesh.addNormal(normal);
+
+        mesh.addVertex(vertices[quad.a]);
+        mesh.addVertex(vertices[quad.b]);
+        mesh.addVertex(vertices[quad.c]);
+        mesh.addVertex(vertices[quad.d]);
+
+        mesh.addQuad(i,i+1,i+2,i+3);
+        i += 4;
+    }
+
+
     mesh.load();
+}
+
+
+
+void Surface::setColor(const glm::vec3 &newColor) {
+    _color = glm::pow(newColor,glm::vec3(2.2f));
+}
+
+void Surface::setMetalness(float metalness) {
+    _metalness = metalness;
+}
+
+void Surface::setRoughness(float roughness) {
+    _roughness = roughness;
 }
 
 

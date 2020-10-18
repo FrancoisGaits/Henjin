@@ -29,15 +29,25 @@ public:
 
     void handleZoom(bool positive);
 
+    void setSurfaceColor(glm::vec3 color);
+    float changeSurfaceMetalness(bool positive);
+    float changeSurfaceRoughness(bool positive);
+
+    inline float getSurfaceMetalness() {return _surfaces.empty() ? 0.f : _surfaces.back()->metalness();}
+    inline float getSurfaceRoughness() {return _surfaces.empty() ? 0.f : _surfaces.back()->roughness();}
+
 private:
     void create_bspline();
     void create_tensor();
     void setupShadow();
 
+
     void place_XYZ();
 
     int _width;
     int _height;
+
+    int _exposure = 3;
 
     const unsigned SHADOW_WIDTH = 2048;
     const unsigned SHADOW_HEIGHT = 2048;

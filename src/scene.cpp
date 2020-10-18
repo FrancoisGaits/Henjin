@@ -13,11 +13,11 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     //place_XYZ();
     create_tensor();
+//    create_bspline();
     _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,1,-1),glm::vec3(1,1,1)));
     _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,-1,-1),glm::vec3(1,1,1)));
 
     setupShadow();
-
 }
 
 void Scene::resize(int width, int height) {
@@ -69,6 +69,7 @@ void Scene::draw(GLuint qt_buffer) {
     _shader.setInt("nbPointLight",_pointlights.size());
     _shader.setInt("nbDirectionalLight",_directionallights.size());
     _shader.setInt("nbDirLights", _directionallights.size());
+    _shader.setInt("exposure",_exposure);
 
     i = 0;
     for(const auto& light : _pointlights) {
@@ -101,6 +102,8 @@ void Scene::draw(GLuint qt_buffer) {
     }
 
     for(const auto &surface : _surfaces) {
+        _shader.setFloat("metalness", surface->metalness());
+        _shader.setFloat("roughness", surface->roughness());
         _shader.setMat4fv("model", surface->model());
         _shader.setVec3("color", surface->color());
         surface->draw();
@@ -138,8 +141,8 @@ void Scene::create_bspline() {
 
 
     std::vector<glm::vec3> points_bs;
-    Bspline bs(points,2);
-    float pas = 0.5f;
+    Bspline bs(points,3, OPEN);
+    float pas = 0.05f;
     for(float u=bs.startInterval(); u<bs.endInterval(); u+=pas){
         points_bs.emplace_back(bs.eval(u));
     }
@@ -216,6 +219,7 @@ void Scene::create_tensor() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(-25, 25);
+
     for(int y = -15; y < 10; ++y) {
         for(int x = -14; x < 14; ++x) {
             points.emplace_back(glm::vec3(x,(distrib(gen)/10.f),y));
@@ -225,7 +229,7 @@ void Scene::create_tensor() {
     }
 
 
-    BSplineTensor bst(pointspoints, 3, 3, OPEN);
+    BSplineTensor bst(pointspoints, 2, 2, OPEN);
 
 //    int i = 0;
 //    for(const auto& p  : pointspoints) {
@@ -233,7 +237,7 @@ void Scene::create_tensor() {
 //    }
 
 
-    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.10f,glm::vec3(1,0.766,0.336),0.8f));
+    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.08f,glm::vec3(1, 0.4, 0.2),0.8f));
 }
 
 void Scene::place_XYZ() {
@@ -289,5 +293,46 @@ void Scene::handleZoom(bool positive) {
 
     positive ? _camera.forward() : _camera.backward();
 
+}
+
+void Scene::setSurfaceColor(glm::vec3 color) {
+    if(_surfaces.empty()) {
+        return;
+    }
+    _surfaces.back()->setColor(color);
+}
+
+float Scene::changeSurfaceMetalness(bool positive) {
+    if(_surfaces.empty()) {
+        return 0.f;
+    }
+
+    float metalness = _surfaces.back()->metalness();
+    float pas = 0.01;
+
+    metalness += positive ? pas : -pas;
+    metalness = metalness < 0.f ? 0.f : metalness;
+    metalness = metalness > 1.f ? 1.f : metalness;
+
+    _surfaces.back()->setMetalness(metalness);
+
+    return metalness;
+}
+
+float Scene::changeSurfaceRoughness(bool positive) {
+    if(_surfaces.empty()) {
+        return 0.f;
+    }
+
+    float roughness = _surfaces.back()->roughness();
+    float pas = 0.01;
+
+    roughness += positive ? pas : -pas;
+    roughness = roughness < 0.f ? 0.f : roughness;
+    roughness = roughness > 1.f ? 1.f : roughness;
+
+    _surfaces.back()->setRoughness(roughness);
+
+    return roughness;
 }
 

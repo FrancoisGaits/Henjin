@@ -19,6 +19,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON )
 
+add_link_options(-lstdc++)
 
 
 add_executable(${PROJECT_NAME} main.cpp

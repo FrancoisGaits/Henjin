@@ -231,13 +231,12 @@ void Scene::create_tensor() {
 
     BSplineTensor bst(pointspoints, 2, 2, OPEN);
 
-//    int i = 0;
 //    for(const auto& p  : pointspoints) {
-//        _lines.emplace_back(std::make_unique<Line>(p, true, glm::vec3(0.2*i++,0.2,0.1)));
+//        _lines.emplace_back(std::make_unique<Line>(p, true, glm::vec3(1,1,1)));
 //    }
 
 
-    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.08f,glm::vec3(1, 0.4, 0.2),0.8f));
+    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.05f,glm::vec3(1, 0.4, 0.2),1.5f));
 }
 
 void Scene::place_XYZ() {

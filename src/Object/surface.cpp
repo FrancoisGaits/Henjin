@@ -95,10 +95,10 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
 
                 if (y == 0) {
 //                    mesh.addQuad(a, b, a + nb_points, b + nb_points);
-                    savedQuads.emplace_back(Quad{a,b,a+nb_points, b+nb_points});
+                    savedQuads.emplace_back(Quad{b,a,b+nb_points, a+nb_points});
                 } else if (y == points.size() - 2) {
 //                    mesh.addQuad(d, c, d + nb_points, c + nb_points);
-                    savedQuads.emplace_back(Quad{d,c,d+nb_points, c+nb_points});
+                    savedQuads.emplace_back(Quad{c,d,c+nb_points, d+nb_points});
                 }
             }
 
@@ -150,7 +150,6 @@ void Surface::init(const std::vector<std::vector<glm::vec3>> &points, glm::vec3 
     unsigned i = mesh.nbVertices();
     for(const auto & quad : savedQuads) {
         glm::vec3 normal = glm::cross(vertices[quad.c]-vertices[quad.a],vertices[quad.d]-vertices[quad.a]);
-        normal.z = -normal.z;
 
         mesh.addNormal(normal);
         mesh.addNormal(normal);

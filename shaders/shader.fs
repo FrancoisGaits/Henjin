@@ -65,7 +65,7 @@ float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
         }
     }
 
-    return 0.25f+(shadow / 12.f);
+    return (shadow / 9.f);
 }
 
 vec3 fresnel(vec3 F, float cos) {
@@ -174,4 +174,5 @@ void main() {
 
 
     color = vec4(mapped,1);
+    //color = vec4(normal*0.5+0.5,1);
 }

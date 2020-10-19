@@ -41,6 +41,9 @@ private:
     void create_tensor();
     void setupShadow();
 
+    void defaultSurface(std::vector<std::vector<glm::vec3>>& pointspoints);
+    void randomSurface(std::vector<std::vector<glm::vec3>>& pointspoints);
+    void customSurface(std::vector<std::vector<glm::vec3>>& pointspoints);
 
     void place_XYZ();
 

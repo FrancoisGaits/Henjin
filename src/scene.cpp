@@ -13,7 +13,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     //place_XYZ();
     create_tensor();
-//    create_bspline();
+    //create_bspline();
     _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,1,-1),glm::vec3(1,1,1)));
     _directionallights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,-1,-1),glm::vec3(1,1,1)));
 
@@ -131,17 +131,20 @@ void Scene::move(int x, int y) {
 void Scene::create_bspline() {
 
     std::vector<glm::vec3> points;
+    points.emplace_back(glm::vec3(-5.75,0.75,-4.5));
     points.emplace_back(glm::vec3(-5.5,0.75,-1.5));
     points.emplace_back(glm::vec3(-3.75,-1.75,2.5));
     points.emplace_back(glm::vec3(-0.25,0.75,-1.5));
     points.emplace_back(glm::vec3(3.75,-3.75,1.5));
     points.emplace_back(glm::vec3(5.75,0.75,-4.5));
+    points.emplace_back(glm::vec3(6.,-0.75,-3.5));
 
-    _lines.emplace_back(std::make_unique<Line>(points, true, glm::vec3(0.8,0.1,0.1)));
+
+    _lines.emplace_back(std::make_unique<Line>(points, true, glm::vec3(1,0,0)));
 
 
     std::vector<glm::vec3> points_bs;
-    Bspline bs(points,3, OPEN);
+    Bspline bs(points,3, UNIFORM);
     float pas = 0.05f;
     for(float u=bs.startInterval(); u<bs.endInterval(); u+=pas){
         points_bs.emplace_back(bs.eval(u));
@@ -338,17 +341,20 @@ void Scene::customSurface(std::vector<std::vector<glm::vec3>>& pointspoints) {
 void Scene::create_tensor() {
     std::vector<std::vector<glm::vec3>> pointspoints;
 
+
 //    defaultSurface(pointspoints);
 //    customSurface(pointspoints);
     randomSurface(pointspoints);
 
-    BSplineTensor bst(pointspoints, 3, 3, UNIFORM);
+
+    BSplineTensor bst(pointspoints, 3, 3, OPEN);
+
 
 //    for(const auto& p  : pointspoints) {
-//        _lines.emplace_back(std::make_unique<Line>(p, true, glm::vec3(1,1,1)));
+//        _lines.emplace_back(std::make_unique<Line>(p, true, glm::vec3(1,0,0)));
 //    }
 
-    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.05f,glm::vec3(1, 0.4, 0.2),1.f));
+    _surfaces.emplace_back(std::make_unique<Surface>(bst,0.1f,glm::vec3(0.8f,0.5f,0.8f),1.f));
 }
 
 void Scene::place_XYZ() {

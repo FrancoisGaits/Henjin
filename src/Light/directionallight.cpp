@@ -13,6 +13,9 @@ const glm::vec3 &DirectionalLight::color() const {
 }
 
 glm::mat4 DirectionalLight::lightSpaceMatrix() const {
-    return glm::ortho<float>(-15.f, 15.f, -10.f, 10.f, -10.f, 20.f) *
-           glm::lookAt(_direction,glm::vec3(0),glm::vec3(0,1,0));
+//    return glm::ortho<float>(-20.f, 20.f, -15.f, 15.f, -15.f, 25.f) *
+//           glm::lookAt(_direction,glm::vec3(0),glm::vec3(0,1,0));
+
+    return glm::ortho<float>(-18.f, 20.f, -12.f, 10.f, -15.f, 15.f) *
+           glm::lookAt(_direction*3.f,glm::vec3(0),glm::vec3(0,1,0));
 }

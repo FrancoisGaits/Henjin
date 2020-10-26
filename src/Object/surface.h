@@ -15,8 +15,8 @@ struct Quad {
 
 class Surface {
 public:
-    explicit Surface(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color = glm::vec3(1), float offset = 0.5f, float metalness=1.f, float roughness=0.5f);
-    explicit Surface(const BSplineTensor& tensor, float pas, glm::vec3 color = glm::vec3(1), float offset = 0.5f, float metalness=1.f, float roughness=0.5f);
+    explicit Surface(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color = glm::vec3(1), float offset = 0.f, float metalness=1.f, float roughness=0.5f);
+    explicit Surface(const BSplineTensor& tensor, float pas, glm::vec3 color = glm::vec3(1), float offset = 0.f, float metalness=1.f, float roughness=0.5f);
 
     void init(const std::vector<std::vector<glm::vec3>>& points, glm::vec3 color, float offset);
 

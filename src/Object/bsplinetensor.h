@@ -30,7 +30,7 @@ private:
     unsigned _k;
 
     std::vector<unsigned> _knots;
-    std::vector<Bspline> _genBspline;
+    std::vector<Bspline> _dirBsplines;
 
 };
 

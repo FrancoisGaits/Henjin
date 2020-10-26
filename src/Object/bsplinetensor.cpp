@@ -4,7 +4,7 @@
 BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsigned degreeU, unsigned degreeV, Knots knotType) : _points{points} {
 
     for(const auto & p : points) {
-        _genBspline.emplace_back(Bspline(p,degreeV,knotType));
+        _dirBsplines.emplace_back(Bspline(p, degreeV, knotType));
     }
 
     _k = degreeU+1;
@@ -30,8 +30,8 @@ BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsign
     _startUInterval = _knots[degreeU];
     _endUInterval = _knots[points.size()];
 
-    _startVInterval = _genBspline.back().startInterval();
-    _endVInterval = _genBspline.back().endInterval();
+    _startVInterval = _dirBsplines.back().startInterval();
+    _endVInterval = _dirBsplines.back().endInterval();
 
 
 
@@ -40,7 +40,7 @@ BSplineTensor::BSplineTensor(std::vector<std::vector<glm::vec3>> &points, unsign
 
 glm::vec3 BSplineTensor::eval(float u, float v) const {
     std::vector<glm::vec3> points;
-    for(const auto & bspline : _genBspline) {
+    for(const auto & bspline : _dirBsplines) {
         points.emplace_back(bspline.eval(v));
     }
 

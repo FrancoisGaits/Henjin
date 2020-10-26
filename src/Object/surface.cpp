@@ -29,8 +29,6 @@ Surface::Surface(const BSplineTensor &tensor, float pas, glm::vec3 color, float 
         points.clear();
     }
 
-    std::cout << std::endl;
-
 
 
     init(pointspoints, color, offset);

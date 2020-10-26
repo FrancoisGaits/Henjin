@@ -31,9 +31,12 @@ void Mesh::addVertex(const glm::vec3 &v) {
 }
 
 void Mesh::addNormal(float x, float y, float z) {
-    normals.emplace_back(x);
-    normals.emplace_back(y);
-    normals.emplace_back(z);
+    glm::vec3 n{x,y,z};
+    n = glm::normalize(n);
+
+    normals.emplace_back(n.x);
+    normals.emplace_back(n.y);
+    normals.emplace_back(n.z);
 }
 
 unsigned Mesh::nbTriangles() const {

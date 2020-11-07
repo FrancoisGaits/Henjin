@@ -32,7 +32,16 @@ void MainWindow::on_actionOpenGl_Info_triggered() {
 }
 
 
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    resizeWindow(event->size().width(),event->size().height());
 
+}
+
+void MainWindow::resizeWindow(int width, int height) {
+    glWidget->resize(width,height);
+
+}
 
 
 

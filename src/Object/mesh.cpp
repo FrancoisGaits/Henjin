@@ -88,3 +88,7 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &_ebo);
     glDeleteVertexArrays(1, &_vao);
 }
+
+void Mesh::addNormal(glm::vec3 &n) {
+    addNormal(n.x,n.y,n.z);
+}

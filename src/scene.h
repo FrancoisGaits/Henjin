@@ -4,8 +4,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
+#include <QtGui/QKeyEvent>
 
 #include "src/Object/plane.h"
+#include "src/Object/isosurface.h"
 #include "src/Light/directionallight.h"
 #include "src/Light/pointlight.h"
 #include "shader.h"
@@ -24,6 +26,8 @@ public:
     void click(unsigned button, int x, int y);
     void move(int x, int y);
     void resetCamera();
+    void cameraKeyEvent(QKeyEvent *event, float deltaTime);
+    void reloadShader();
 
 private:
     int _width;
@@ -39,7 +43,7 @@ private:
     glm::mat4 _projection{};
 
     Camera _camera;
-    Shader _shader;
+    std::unique_ptr<Shader> _shader;
     Shader _shadowShader = Shader(true);
 
     std::vector<std::unique_ptr<Shape>> _objects;

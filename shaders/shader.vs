@@ -19,10 +19,11 @@ out vec3 fragColor;
 out vec4 fragPosLight[N_MAX_DIR_LIGHT];
 
 void main(){
-    gl_Position = projection * view * model * vec4(position, 1.0f);
-//    gl_Position = vec4(position, 1.0f);
+    gl_Position =  projection * view *  model *vec4(position, 1.0f);
     fragColor = color;
-    normal = normalize(inormal);
+
+//    normal = normalize(inormal);
+    normal = normalize(transpose(inverse(model)) * vec4(inormal,0)).xyz;
     fragPosWorld = vec3(model*vec4(position, 1));
 
     for(int i=0; i < nbDirLights; ++i) {

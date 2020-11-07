@@ -1,6 +1,8 @@
 #include "shader.h"
 
 Shader::Shader(bool shadows) {
+    _valid = true;
+
     std::string vertexPath(shadows ? "../shaders/shadows.vs" : "../shaders/shader.vs");
     std::string fragmentPath(shadows ? "../shaders/shadows.fs" : "../shaders/shader.fs");
 
@@ -28,6 +30,7 @@ Shader::Shader(bool shadows) {
     }
     catch (std::ifstream::failure &e) {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+        _valid = false;
     }
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
@@ -47,6 +50,7 @@ Shader::Shader(bool shadows) {
     if (!success) {
         glGetShaderInfoLog(vertexshader, 512, nullptr, log);
         std::cerr << "Echec de compilation du vertex shader : \n" << log << std::endl;
+        _valid = false;
     }
 
     fragmentshader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -57,6 +61,7 @@ Shader::Shader(bool shadows) {
     if (!success) {
         glGetShaderInfoLog(fragmentshader, 512, nullptr, log);
         std::cerr << "Echec de compilation du fragment shader : \n" << log << std::endl;
+        _valid = false;
     }
 
     ID = glCreateProgram();
@@ -69,10 +74,14 @@ Shader::Shader(bool shadows) {
     if(!success) {
         glGetProgramInfoLog(ID, 512, nullptr, log);
         std::cerr << "Echec de link : \n" << log << std::endl;
+        _valid = false;
     }
 
     glDeleteShader(vertexshader);
     glDeleteShader(fragmentshader);
+
+    std::cout << "Shader created ID : " << ID << std::endl;
+
 }
 
 void Shader::setBool(const std::string &name, bool value) const {
@@ -120,7 +129,12 @@ void Shader::use() {
 }
 
 Shader::~Shader() {
+    std::cout << "Shader deletion ID : " << ID << std::endl;
     glDeleteProgram(ID);
+}
+
+bool Shader::isValid() const {
+    return _valid;
 }
 
 

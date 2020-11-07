@@ -5,7 +5,7 @@
 
 class Plane : public Shape {
 public:
-    explicit Plane(glm::vec3 position, glm::vec3 normal, float side);
+    explicit Plane(glm::vec3 position, glm::vec3 color, float side);
 
     void draw() const override;
 

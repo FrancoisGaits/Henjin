@@ -2,7 +2,7 @@
 
 #define N_MAX_POINT_LIGHT 16
 #define N_MAX_DIR_LIGHT 4
-#define EPSILON 0.01
+#define EPSILON 0.001
 
 struct PointLight {
     vec3 position;
@@ -42,29 +42,21 @@ float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
     vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-//    float closestDepth = texture(shadowMap, projCoords.xyz);
-//    // get depth of current fragment from light's perspective
-//    float currentDepth = projCoords.z;
-//    // check whether current frag pos is in shadow
-//    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
     float Offset = 1.0/shadowMapSize;
     float yOffset = 1.0/shadowMapSize;
 
-    float Factor = 0.0;
+    float shadow = 0.f;
 
     for (int y = -1 ; y <= 1 ; y++) {
         for (int x = -1 ; x <= 1 ; x++) {
-            vec2 Offsets = vec2(x * Offset, y * Offset);
-            vec3 UVC = vec3(projCoords.xy + Offsets, projCoords.z - EPSILON);
-            Factor += texture(shadowMap, UVC);
+            vec2 Offsets = vec2(x * Offset, y * yOffset);
+            vec3 UVC = vec3(projCoords.xy + Offsets, projCoords.z - EPSILON );
+            shadow += texture(shadowMap, UVC);
         }
     }
 
-    return (Factor / 9.0);
-
-    //return shadow;
+    return 0.1f+(shadow / 10.f);
 }
 
 vec3 fresnel(vec3 F, float cos) {
@@ -103,9 +95,10 @@ vec3 diffuseFresnel(vec3 ior) {
 void main() {
 //    color = vec4( clamp( dot( normalize(normal), normalize(lightPos-fragPosWorld)), 0, 1 ) * lightColor, 1.0);
 
-    vec3 albedo = vec3(1);
-    float metalness = 1;
-    float roughness = 0.5;
+    float metalness = 1.f;
+    float roughness = 0.5f;
+
+    vec3 albedo = fragColor;
 
     vec3 view = normalize(cameraPos - fragPosWorld);
 
@@ -115,7 +108,6 @@ void main() {
     vec3 F0 = mix(Fdielctric, albedo, metalness);
 
     vec3 direct = vec3(0);
-    vec3 totalcolor = vec3(0);
 
     //point lights
     for(int i=0; i<nbPointLight; ++i) {
@@ -139,8 +131,7 @@ void main() {
         vec3 lambertian = albedo / PI;
         vec3 specular = (D * F * G) / max(Epsilon, 2.0 * cosNL * cosNV);
 
-        totalcolor += pointLights[i].color;
-        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * pointLights[i].color * fragColor * cosNL * (2/(lDist));
+        direct += (specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * pointLights[i].color * cosNL * (2/(lDist));
     }
 
     //directional
@@ -162,21 +153,20 @@ void main() {
         vec3 lambertian = albedo / PI;
         vec3 specular = (D * F * G) / max(Epsilon, 2.0 * cosNL * cosNV);
 
-        totalcolor += directionalLights[i].color;
-
         float sha = shadow(fragPosLight[i],shadowMaps[i]);
 
-        direct += sha * ((specular + ((vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color * fragColor * cosNL);
+        direct += sha * (specular + ( (vec3(1) - FT) * (vec3(1) - FTir) * lambertian) * dfc) * directionalLights[i].color  * cosNL;
     }
 
-    vec3 ambiant = vec3(0.01) * fragColor * normalize(totalcolor);
+    vec3 ambiant = vec3(0.01) * fragColor;
 
-    vec3 hdr = direct + ambiant;
+    vec3 hdr = (direct+ambiant)*4;
 
-    vec3 mapped = vec3(1.0) - exp(-hdr);
-//    vec3 mapped = hdr / (vec3(1) + hdr);
-    mapped = pow(mapped, vec3(1/2.4));
+
+    vec3 mapped = hdr/ (vec3(1) + hdr);
+    mapped = pow(mapped, vec3(1.f/2.2));
 
 
     color = vec4(mapped,1);
+//    color = vec4(normal*0.5+0.5,1);
 }

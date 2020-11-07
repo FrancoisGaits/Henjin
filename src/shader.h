@@ -29,6 +29,10 @@ public:
 
     ~Shader();
 
+    bool isValid() const;
+
+    inline unsigned id() const {return ID;}
+
     void setBool(const std::string &name, bool value) const;
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float value) const;
@@ -37,6 +41,7 @@ public:
 
 private:
     unsigned ID;
+    bool _valid;
 };
 
 #endif //HENJIN_SHADER_H

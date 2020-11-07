@@ -19,9 +19,10 @@ private:
     Ui::MainWindow *ui;
     GlWidget *glWidget;
 
+    void resizeWindow(int width, int height);
 
 private slots:
-
+    void resizeEvent(QResizeEvent* event) override;
     void on_actionOpenGl_Info_triggered();
 
 };

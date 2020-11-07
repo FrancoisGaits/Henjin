@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions_4_1_Core>
 #include <memory>
 #include <QKeyEvent>
+#include <QDateTime>
 
 #include "scene.h"
 
@@ -22,6 +23,7 @@ public:
 public slots:
     void cleanup();
 
+
 protected:
     void initializeGL() override;
     void paintGL() override;
@@ -33,8 +35,13 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 
+
 private:
     std::unique_ptr<Scene> _scene;
+    bool _lines = false;
+
+    std::int64_t _lastTime;
+    float _deltaTime;
 
 };
 

@@ -26,6 +26,7 @@ public:
     void addVertex(float x, float y, float z);
     void addVertex(glm::vec3 &v);
     void addNormal(float x, float y, float z);
+    void addNormal(glm::vec3 &n);
 
     unsigned nbTriangles() const;
     unsigned nbVertices() const;

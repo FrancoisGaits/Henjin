@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <QtGui/QKeyEvent>
 
 class Camera {
 public :
@@ -19,12 +20,14 @@ public :
 
     void click(unsigned button, int x, int y);
     void move(int x, int y);
+    void keyEvent(QKeyEvent *event, float deltaTime);
 
 
 private:
     glm::vec3 _position;
     glm::vec3 _front;
     glm::vec3 _up;
+    glm::vec3 _right;
 
     float _speed;
     float _sensitivity;

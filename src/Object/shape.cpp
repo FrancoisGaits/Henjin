@@ -13,29 +13,29 @@ const glm::mat4 &Shape::model() const {
     return _model;
 }
 
-void Shape::translate(glm::vec3 &vec) {
+void Shape::translate(glm::vec3 vec) {
     _model = glm::translate(_model, vec);
 }
 
-void Shape::rotate(glm::vec3 &rot) {
+void Shape::rotate(glm::vec3 rot) {
     rotateX(rot.x);
     rotateY(rot.y);
     rotateZ(rot.z);
 }
 
 void Shape::rotateX(float angle) {
-    _model = glm::rotate(_model,angle,glm::vec3(1,0,0));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(1,0,0));
 }
 
 void Shape::rotateY(float angle) {
-    _model = glm::rotate(_model,angle,glm::vec3(0,1,0));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(0,1,0));
 }
 
 void Shape::rotateZ(float angle) {
-    _model = glm::rotate(_model,angle,glm::vec3(0,0,1));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(0,0,1));
 }
 
-void Shape::scale(glm::vec3 &scale) {
+void Shape::scale(glm::vec3 scale) {
     _model = glm::scale(_model, glm::vec3(scale));
 }
 

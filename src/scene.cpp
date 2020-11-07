@@ -5,6 +5,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     glEnable(GL_MULTISAMPLE);
     glViewport(0,0,width,height);
 
+    _shader = std::make_unique<Shader>();
     _camera.setviewport(glm::vec4(0.f,0.f,_width,_height));
     _view = _camera.viewmatrix();
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
@@ -23,7 +24,7 @@ void Scene::resize(int width, int height) {
 }
 
 void Scene::draw(GLint qt_framebuffer) {
-    glClearColor(0.36f,0.64f,0.55f,1.0f);
+    glClearColor(.9f,1.f,1.f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
 
     //shadows
@@ -55,30 +56,30 @@ void Scene::draw(GLint qt_framebuffer) {
 
     _view = _camera.viewmatrix();
 
-    _shader.use();
+    _shader->use();
 
-    _shader.setMat4fv("view", _view);
-    _shader.setMat4fv("projection", _projection);
+    _shader->setMat4fv("view", _view);
+    _shader->setMat4fv("projection", _projection);
 
-    _shader.setVec3("cameraPos", _camera.position());
-    _shader.setInt("nbPointLight", _pointLights.size());
-    _shader.setInt("nbDirectionalLight", _directionalLights.size());
-    _shader.setInt("nbDirLights", _directionalLights.size());
+    _shader->setVec3("cameraPos", _camera.position());
+    _shader->setInt("nbPointLight", _pointLights.size());
+    _shader->setInt("nbDirectionalLight", _directionalLights.size());
+    _shader->setInt("nbDirLights", _directionalLights.size());
 
 
 
     i = 0;
     for(const auto& light : _pointLights) {
-        _shader.setVec3("pointLights[" + std::to_string(i) + "].position", light->position());
-        _shader.setVec3("pointLights[" + std::to_string(i) + "].color", light->color());
+        _shader->setVec3("pointLights[" + std::to_string(i) + "].position", light->position());
+        _shader->setVec3("pointLights[" + std::to_string(i) + "].color", light->color());
         ++i;
     }
 
     i = 0;
     for(const auto& light : _directionalLights) {
-        _shader.setVec3("directionalLights[" + std::to_string(i) + "].direction", light->direction());
-        _shader.setVec3("directionalLights[" + std::to_string(i) + "].color", light->color());
-        _shader.setMat4fv("lightSpaceModels[" + std::to_string(i) + "]", light->lightSpaceMatrix());
+        _shader->setVec3("directionalLights[" + std::to_string(i) + "].direction", light->direction());
+        _shader->setVec3("directionalLights[" + std::to_string(i) + "].color", light->color());
+        _shader->setMat4fv("lightSpaceModels[" + std::to_string(i) + "]", light->lightSpaceMatrix());
         ++i;
     }
 
@@ -90,8 +91,8 @@ void Scene::draw(GLint qt_framebuffer) {
     }
 
     for(const auto &object : _objects) {
-        _shader.setMat4fv("model", object->model());
-        _shader.setVec3("color", object->color());
+        _shader->setMat4fv("model", object->model());
+        _shader->setVec3("color", object->color());
         object->draw();
     }
 
@@ -115,24 +116,42 @@ void Scene::resetCamera() {
 }
 
 void Scene::setupObjects() {
-    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
-    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1,-0.5,1),glm::vec3(1),1,480));
-    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(-1,-0.5,1),glm::vec3(1),1,600));
-    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(0,1,0),20));
+    RBF func = [](glm::vec3 pos){return (pos.x*pos.x + pos.y*pos.y + pos.z*pos.z)-0.7f;};
+//    RBF func = [](glm::vec3 pos){return std::sin(pos.x*pos.y*5+pos.z*pos.x*5+pos.y*pos.z*5) + std::sin(pos.y*pos.z*5) + std::sin(pos.y*pos.x*5) + std::sin(pos.x*pos.z*5) -1 ;};
+
+    _objects.emplace_back(std::make_unique<IsoSurface>(func, glm::vec3(-2,-2,-2),0.1,glm::vec3{1.5,1.f,0},glm::vec3{1,0,0}));
+
+        _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
+//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1,-0.5,1),glm::vec3(1),1,480));
+//
+//
+//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(-1,-0.5,1),glm::vec3(1),1,600));
+//
+//    _objects.back()->translate(glm::vec3(0,1.5,1));
+//    _objects.back()->rotateY(180.f);
+//    _objects.back()->rotateX(180.f);
+
+
+//    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,0,0),glm::vec3(1,1,1),1));
+//    _objects.back()->rotateZ(-45.f);
+
+    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(1,1,1),10));
 }
 
 void Scene::setupLights() {
     _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
-//    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(0,1,0)));
-//    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(0,0,1)));
-//    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(5), glm::vec3(0.8)));
+    //_directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
+    //_directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
+
+
+//     _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(0,5,-1), glm::vec3(0.8,0.2,1)));
 //    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5, 5, 5), glm::vec3(0.8, 0, 0)));
 }
 
 void Scene::setupShadows() {
     unsigned i = 0;
 
-    _shader.use();
+    _shader->use();
     for(const auto & light : _directionalLights) {
         _depthMapFBOs.emplace_back(0);
         _depthMaps.emplace_back(0);
@@ -158,10 +177,30 @@ void Scene::setupShadows() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-        _shader.setInt("shadowMaps["+std::to_string(i)+"]", i);
+        _shader->setInt("shadowMaps["+std::to_string(i)+"]", i);
 
         ++i;
     }
-    _shader.setInt("shadowMapSize", static_cast<int>(SHADOW_HEIGHT));
+    _shader->setInt("shadowMapSize", static_cast<int>(SHADOW_HEIGHT));
+}
+
+void Scene::reloadShader() {
+    std::unique_ptr<Shader> newShader = std::make_unique<Shader>();
+
+    if(newShader->isValid()) {
+        _shader = std::move(newShader);
+
+        _shader->use();
+        _shader->setInt("shadowMapSize", static_cast<int>(SHADOW_HEIGHT));
+
+        for(unsigned i=0; i < _directionalLights.size(); ++i) {
+            _shader->setInt("shadowMaps[" + std::to_string(i) + "]", i);
+        }
+
+    }
+}
+
+void Scene::cameraKeyEvent(QKeyEvent *event, float deltaTime) {
+    _camera.keyEvent(event, deltaTime);
 }
 

@@ -2,6 +2,7 @@
 #include "glwidget.h"
 
 GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent){
+    _lastTime = QDateTime::currentMSecsSinceEpoch();
 
 }
 
@@ -31,14 +32,26 @@ void GlWidget::initializeGL() {
 }
 
 void GlWidget::paintGL() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if(_lines) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+
     _scene->draw(context()->defaultFramebufferObject());
     glFinish();
 
+    std::int64_t time = QDateTime::currentMSecsSinceEpoch();
+
+    _deltaTime = static_cast<float>(time - _lastTime)/1000.f;
+    _lastTime = time;
+
+    update();
 }
 
 void GlWidget::resizeGL(int width, int height) {
-
+    _scene->resize(width,height);
 }
 
 GlWidget::~GlWidget() {
@@ -49,8 +62,24 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
     switch(event->key()){
         case Qt::Key_R :
             _scene->resetCamera();
-            update();
             break;
+
+        case Qt::Key_N :
+            _scene->reloadShader();
+            break;
+
+        case Qt::Key_W :
+            _lines = !_lines;
+            break;
+
+        case Qt::Key_Z:
+        case Qt::Key_Q:
+        case Qt::Key_S:
+        case Qt::Key_D:
+            _scene->cameraKeyEvent(event, _deltaTime);
+            break;
+
+
         default:
 
             break;
@@ -59,7 +88,6 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {
     _scene->move(event->x(),event->y());
-    update();
 }
 
 void GlWidget::mousePressEvent(QMouseEvent *event) {

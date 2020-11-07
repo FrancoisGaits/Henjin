@@ -4,11 +4,12 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 look, float zoom) :  _position(position),
                                                                                 _front(look - position),
                                                                                 _up(up),
-                                                                                _speed(1.f),
+                                                                                _speed(5.f),
                                                                                 _sensitivity(10.f),
                                                                                 _zoom(zoom) {
     _radius = glm::length(_front);
     _front *= 1.f / _radius;
+    _right = glm::normalize(glm::cross(_front,_up));
 
 }
 
@@ -107,10 +108,30 @@ void Camera::rotateCamera() {
 void Camera::panCamera() {
     glm::vec2 mov = _panEnd - _panStart;
     if (glm::length(mov) != 0.0f) {
-        mov *= _sensitivity * _speed;
+        mov *= _sensitivity;
         glm::vec3 pan = glm::cross(_up, _front) * mov.x + _up * mov.y;
         _position += pan;
         _panStart = _panEnd;
+    }
+
+}
+
+void Camera::keyEvent(QKeyEvent *event, float deltaTime) {
+    switch(event->key()) {
+        case Qt::Key_Z:
+            _position += _speed*deltaTime*_front;
+            break;
+        case Qt::Key_Q:
+            _position -= _speed*deltaTime*_right;
+            break;
+        case Qt::Key_S:
+            _position -= _speed*deltaTime*_front;
+            break;
+        case Qt::Key_D:
+            _position += _speed*deltaTime*_right;
+            break;
+        default:
+            break;
     }
 
 }

@@ -14,15 +14,15 @@ public:
     const glm::vec3 &color() const;
     const glm::mat4 &model() const;
 
-    void translate(glm::vec3 &vec);
+    void translate(glm::vec3 vec);
 
-    void rotate(glm::vec3 &rot);
+    void rotate(glm::vec3 rot);
 
     void rotateX(float angle);
     void rotateY(float angle);
     void rotateZ(float angle);
 
-    void scale(glm::vec3 &scale);
+    void scale(glm::vec3 scale);
 
     void scaleX(float scale);
     void scaleY(float scale);

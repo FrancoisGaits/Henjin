@@ -2,38 +2,15 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-IsoSurface::IsoSurface(RBF func, glm::vec3 start, float cellSize, glm::vec3 position, glm::vec3 color) : Shape(position, color, 1) {
-    _func = func;
-    _cellSize = cellSize;
-    _start = start;
-    _indexOffset = 0;
-
-    glm::vec3 box = start + start;
+IsoSurface::IsoSurface(ImplicitFunction func, glm::vec3 start, float cellSize, glm::vec3 position, glm::vec3 color) : Shape(position, color, 1) {
+    init(func, start, cellSize);
+}
 
 
-    _nbX = static_cast<int>(std::abs(box.x)/cellSize)+1;
-    _nbY = static_cast<int>(std::abs(box.y)/cellSize)+1;
-    _nbZ = static_cast<int>(std::abs(box.z)/cellSize)+1;
+IsoSurface::IsoSurface(MetaBalls mb, glm::vec3 start, float cellSize, glm::vec3 position, glm::vec3 color) : Shape(position, color, 1) {
+    ImplicitFunction func = std::function<float(glm::vec3)>(mb);
+    init(func, start, cellSize);
 
-    std::vector<float> firstGrid;
-    firstGrid.resize(_nbX*_nbY);
-    std::vector<float> secondGrid;
-    secondGrid.resize(_nbX*_nbY);
-
-    fillGrid(firstGrid, 0);
-    for(unsigned z = 1; z < _nbZ+1; ++z) {
-        fillGrid(secondGrid, z);
-        gridsToMesh(firstGrid,secondGrid,z);
-        std::copy(secondGrid.begin(), secondGrid.end(), firstGrid.begin());
-    }
-
-    for(unsigned i=0; i<_mesh.nbVertices(); ++i) {
-        glm::vec3 vert = {_mesh.vertices[i*3],_mesh.vertices[i*3+1],_mesh.vertices[i*3+2]};
-        glm::vec3 normal = estimateNormal(vert);
-        _mesh.addNormal(normal);
-    }
-
-    _mesh.load();
 }
 
 void IsoSurface::fillGrid(std::vector<float> &grid, unsigned z) {
@@ -90,5 +67,40 @@ glm::vec3 IsoSurface::estimateNormal(glm::vec3 position) {
 
     return normal;
 }
+
+void IsoSurface::init(ImplicitFunction func, glm::vec3 start, float cellSize) {
+    _func = std::move(func);
+    _cellSize = cellSize;
+    _start = start;
+    _indexOffset = 0;
+
+    glm::vec3 box = start + start;
+
+
+    _nbX = static_cast<int>(std::abs(box.x)/cellSize)+1;
+    _nbY = static_cast<int>(std::abs(box.y)/cellSize)+1;
+    _nbZ = static_cast<int>(std::abs(box.z)/cellSize)+1;
+
+    std::vector<float> firstGrid;
+    firstGrid.resize(_nbX*_nbY);
+    std::vector<float> secondGrid;
+    secondGrid.resize(_nbX*_nbY);
+
+    fillGrid(firstGrid, 0);
+    for(unsigned z = 1; z < _nbZ+1; ++z) {
+        fillGrid(secondGrid, z);
+        gridsToMesh(firstGrid,secondGrid,z);
+        std::copy(secondGrid.begin(), secondGrid.end(), firstGrid.begin());
+    }
+
+    for(unsigned i=0; i<_mesh.nbVertices(); ++i) {
+        glm::vec3 vert = {_mesh.vertices[i*3],_mesh.vertices[i*3+1],_mesh.vertices[i*3+2]};
+        glm::vec3 normal = estimateNormal(vert);
+        _mesh.addNormal(normal);
+    }
+
+    _mesh.load();
+}
+
 
 

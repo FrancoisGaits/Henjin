@@ -1,6 +1,6 @@
 #include "shape.h"
 
-Shape::Shape(glm::vec3 position, glm::vec3 color, float scale) : _color{color} {
+Shape::Shape(glm::vec3 position, glm::vec3 color, float scale) : _color{glm::pow(color,glm::vec3(2.2f))} {
 
     _model = glm::scale(glm::translate(position),glm::vec3(scale));
 }

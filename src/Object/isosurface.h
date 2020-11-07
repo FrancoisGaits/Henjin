@@ -4,15 +4,17 @@
 #include <functional>
 #include "marchingcube.h"
 #include "shape.h"
+#include "src/Object/metaball.h"
 
-using RBF = std::function<float(glm::vec3)>;
+using ImplicitFunction = std::function<float(glm::vec3)>;
 
 class IsoSurface : public Shape {
 public :
-    explicit IsoSurface(RBF func, glm::vec3 start, float cellSize, glm::vec3 position={0,0,0}, glm::vec3 color={1,1,1});
+    explicit IsoSurface(ImplicitFunction func, glm::vec3 start, float cellSize, glm::vec3 position={0, 0, 0}, glm::vec3 color={1, 1, 1});
+    explicit IsoSurface(MetaBalls mb, glm::vec3 start, float cellSize, glm::vec3 position={0, 0, 0}, glm::vec3 color={1, 1, 1});
 
 private :
-    RBF _func;
+    ImplicitFunction _func;
     float _cellSize;
     unsigned _indexOffset;
     glm::vec3 _start;
@@ -20,7 +22,7 @@ private :
     int _nbY;
     int _nbZ;
 
-    const float _epsilon = 0.0003f;
+    const float _epsilon = 0.0001f;
 
     void fillGrid(std::vector<float>& grid, unsigned z);
     void gridsToMesh(std::vector<float>& firstGrid, std::vector<float>& secondGrid, unsigned z);
@@ -28,7 +30,7 @@ private :
 
 
     void draw() const override;
-
+    void init(ImplicitFunction func, glm::vec3 start, float cellSize);
 
 };
 

@@ -1,14 +1,17 @@
 #include <iostream>
 #include "metaball.h"
 
-MetaBall::MetaBall(glm::vec3 center, float radius) : _center{center}, _radius{radius} {
+MetaBall::MetaBall(glm::vec3 center, float radius, BallType type) : _center{center}, _radius{radius}, _type{type} {
 
 }
 
 float MetaBall::f(glm::vec3 pos) const {
     float d = glm::dot(_center - pos,_center - pos);
 
-    return _radius/d ;
+    if(d>_threshold || d == 0.f)
+        return 0;
+
+    return (_radius/d)* static_cast<float>(_type);
 }
 
 
@@ -21,8 +24,8 @@ float MetaBalls::operator()(glm::vec3 pos) {
     return sum;
 }
 
-void MetaBalls::addMetaBall(glm::vec3 center, float radius) {
-    addMetaBall(MetaBall(center, radius));
+void MetaBalls::addMetaBall(glm::vec3 center, float radius, BallType type) {
+    addMetaBall(MetaBall(center, radius, type));
 }
 
 void MetaBalls::addMetaBall(MetaBall mb) {

@@ -23,9 +23,11 @@ void Scene::resize(int width, int height) {
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 }
 
-void Scene::draw(GLint qt_framebuffer) {
+void Scene::draw(GLint qt_framebuffer, float deltaTime) {
     glClearColor(.9f,1.f,1.f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
+
+    _camera.update(deltaTime);
 
     //shadows
     unsigned i = 0;
@@ -106,8 +108,8 @@ void Scene::click(unsigned button, int x, int y) {
     _camera.click(button,x,y);
 }
 
-void Scene::move(int x, int y) {
-    _camera.move(x,y);
+void Scene::move(int x, int y, float deltaTime) {
+    _camera.move(x, y, deltaTime);
 }
 
 void Scene::resetCamera() {
@@ -200,7 +202,11 @@ void Scene::reloadShader() {
     }
 }
 
-void Scene::cameraKeyEvent(QKeyEvent *event, float deltaTime) {
-    _camera.keyEvent(event, deltaTime);
+void Scene::cameraKeyEvent(QKeyEvent *event) {
+    _camera.keyEvent(event);
+}
+
+void Scene::cameraKeyReleaseEvent(QKeyEvent *event) {
+    _camera.keyReleaseEvent(event);
 }
 

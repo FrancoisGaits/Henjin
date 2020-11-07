@@ -39,7 +39,7 @@ void GlWidget::paintGL() {
     }
 
 
-    _scene->draw(context()->defaultFramebufferObject());
+    _scene->draw(context()->defaultFramebufferObject(), _deltaTime);
     glFinish();
 
     std::int64_t time = QDateTime::currentMSecsSinceEpoch();
@@ -76,7 +76,8 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Q:
         case Qt::Key_S:
         case Qt::Key_D:
-            _scene->cameraKeyEvent(event, _deltaTime);
+            if(!event->isAutoRepeat())
+                _scene->cameraKeyEvent(event);
             break;
 
 
@@ -87,7 +88,7 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
 }
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {
-    _scene->move(event->x(),event->y());
+    _scene->move(event->x(),event->y(),_deltaTime);
 }
 
 void GlWidget::mousePressEvent(QMouseEvent *event) {
@@ -105,4 +106,21 @@ void GlWidget::mousePressEvent(QMouseEvent *event) {
     }
 
     _scene->click(b,event->x(),event->y());
+}
+
+void GlWidget::keyReleaseEvent(QKeyEvent *event) {
+    switch(event->key()){
+        case Qt::Key_Z:
+        case Qt::Key_Q:
+        case Qt::Key_S:
+        case Qt::Key_D:
+            if(!event->isAutoRepeat())
+                _scene->cameraKeyReleaseEvent(event);
+            break;
+
+
+        default:
+
+            break;
+    }
 }

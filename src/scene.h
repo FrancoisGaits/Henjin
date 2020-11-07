@@ -21,12 +21,13 @@ public:
     ~Scene() = default;
 
     void resize(int width, int height);
-    void draw(GLint qt_framebuffer);
+    void draw(GLint qt_framebuffer, float deltaTime);
 
     void click(unsigned button, int x, int y);
-    void move(int x, int y);
+    void move(int x, int y, float deltaTime);
     void resetCamera();
-    void cameraKeyEvent(QKeyEvent *event, float deltaTime);
+    void cameraKeyEvent(QKeyEvent *event);
+    void cameraKeyReleaseEvent(QKeyEvent *event);
     void reloadShader();
 
 private:

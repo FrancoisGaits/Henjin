@@ -6,6 +6,7 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <QtGui/QKeyEvent>
+#include <unordered_set>
 
 class Camera {
 public :
@@ -19,39 +20,35 @@ public :
     void setviewport(glm::vec4 viewport);
 
     void click(unsigned button, int x, int y);
-    void move(int x, int y);
-    void keyEvent(QKeyEvent *event, float deltaTime);
+    void move(int x, int y, float deltaTime);
+    void keyEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+    void update(float deltaTime);
 
 
 private:
+    std::unordered_set<int> _keys;
+
     glm::vec3 _position;
     glm::vec3 _front;
     glm::vec3 _up;
+    glm::vec3 _worldUp;
     glm::vec3 _right;
 
     float _speed;
     float _sensitivity;
-    float _radius;
     float _zoom;
+    float _yaw;
+    float _pitch;
 
     unsigned _button;
 
     int _startX;
     int _startY;
 
-    glm::vec3 _rotStart;
-    glm::vec3 _rotEnd;
-
-    glm::vec2 _panStart;
-    glm::vec2 _panEnd;
-
     glm::vec4 _viewport;
 
-    glm::vec3 getMouseProjectionOnBall(int x, int y);
-    glm::vec2 getMouseOnScreen(int x, int y);
-
-    void rotateCamera();
-    void panCamera();
+    void updateVectors();
 };
 
 #endif //HENJIN_CAMERA_H

@@ -13,6 +13,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "src/Object/model.h"
+#include "src/Object/metaball.h"
 
 class Scene {
 public:

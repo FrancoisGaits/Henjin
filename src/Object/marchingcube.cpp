@@ -13,14 +13,14 @@ int MarchingCube::polygonise(gridCell &grid, Mesh &mesh, unsigned indexOffset) {
     //tells us which vertices are inside of the surface
 
     cubeIndex = 0;
-    if (grid.val[0] < 0) cubeIndex |= 1;
-    if (grid.val[1] < 0) cubeIndex |= 2;
-    if (grid.val[2] < 0) cubeIndex |= 4;
-    if (grid.val[3] < 0) cubeIndex |= 8;
-    if (grid.val[4] < 0) cubeIndex |= 16;
-    if (grid.val[5] < 0) cubeIndex |= 32;
-    if (grid.val[6] < 0) cubeIndex |= 64;
-    if (grid.val[7] < 0) cubeIndex |= 128;
+    if (grid.val[0] < 0.5) cubeIndex |= 1;
+    if (grid.val[1] < 0.5) cubeIndex |= 2;
+    if (grid.val[2] < 0.5) cubeIndex |= 4;
+    if (grid.val[3] < 0.5) cubeIndex |= 8;
+    if (grid.val[4] < 0.5) cubeIndex |= 16;
+    if (grid.val[5] < 0.5) cubeIndex |= 32;
+    if (grid.val[6] < 0.5) cubeIndex |= 64;
+    if (grid.val[7] < 0.5) cubeIndex |= 128;
 
     //Cube is entirely in/out of the surface
     if (edgeTable[cubeIndex] == 0)
@@ -93,5 +93,19 @@ int MarchingCube::polygonise(gridCell &grid, Mesh &mesh, unsigned indexOffset) {
 }
 
 glm::vec3 MarchingCube::vertexInterp(const glm::vec3 &p1, const glm::vec3 &p2, float val1, float val2) {
-    return (p1 + (-val1 / (val2 - val1)) * (p2 - p1));
+    double mu;
+    glm::vec3 p;
+
+    if (std::abs(0.5f-val1) < 0.00001)
+        return p1;
+    if (std::abs(0.5f-val2) < 0.00001)
+        return p2;
+    if (std::abs(val1-val2) < 0.00001)
+        return p1;
+    mu = (0.5f - val1) / (val2 - val1);
+    p.x = p1.x + mu * (p2.x - p1.x);
+    p.y = p1.y + mu * (p2.y - p1.y);
+    p.z = p1.z + mu * (p2.z - p1.z);
+
+    return(p);
 }

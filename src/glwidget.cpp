@@ -76,6 +76,8 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Q:
         case Qt::Key_S:
         case Qt::Key_D:
+        case Qt::Key_Shift:
+        case Qt::Key_Space:
             if(!event->isAutoRepeat())
                 _scene->cameraKeyEvent(event);
             break;
@@ -114,6 +116,8 @@ void GlWidget::keyReleaseEvent(QKeyEvent *event) {
         case Qt::Key_Q:
         case Qt::Key_S:
         case Qt::Key_D:
+        case Qt::Key_Shift:
+        case Qt::Key_Space:
             if(!event->isAutoRepeat())
                 _scene->cameraKeyReleaseEvent(event);
             break;

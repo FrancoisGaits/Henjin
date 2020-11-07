@@ -1,4 +1,4 @@
-#version 410 core
+#version 460 core
 
 #define N_MAX_POINT_LIGHT 16
 #define N_MAX_DIR_LIGHT 4

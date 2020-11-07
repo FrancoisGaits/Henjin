@@ -1,10 +1,11 @@
 #ifndef HENJIN_ISOSURFACE_H
 #define HENJIN_ISOSURFACE_H
 
+#include <functional>
 #include "marchingcube.h"
 #include "shape.h"
 
-typedef float (*RBF)(glm::vec3);
+using RBF = std::function<float(glm::vec3)>;
 
 class IsoSurface : public Shape {
 public :

@@ -86,7 +86,7 @@ glm::vec3 IsoSurface::estimateNormal(glm::vec3 position) {
     normal.x = (_func(glm::vec3(position.x + _epsilon, position.y, position.z)) - value);
     normal.y = (_func(glm::vec3(position.x, position.y + _epsilon, position.z)) - value);
     normal.z = (_func(glm::vec3(position.x, position.y, position.z + _epsilon)) - value);
-    normal = glm::normalize(normal);
+    normal = -glm::normalize(normal);
 
     return normal;
 }

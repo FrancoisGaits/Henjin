@@ -118,12 +118,23 @@ void Scene::resetCamera() {
 }
 
 void Scene::setupObjects() {
-    RBF func = [](glm::vec3 pos){return (pos.x*pos.x + pos.y*pos.y + pos.z*pos.z)-0.7f;};
+    RBF funcCercle = [](glm::vec3 pos){return (pos.x*pos.x + pos.y*pos.y + pos.z*pos.z)-0.5f;};
+    RBF func = [](glm::vec3 pos){return (3*pos.x*pos.x - pos.y*pos.y) + (3*pos.z*pos.z)-1.f;};
+    MetaBalls mb;
+    mb.addMetaBall(glm::vec3(0),0.9);
+    mb.addMetaBall(glm::vec3(2),0.6);
+    mb.addMetaBall(glm::vec3(-1,2,1),0.1);
+    mb.addMetaBall(glm::vec3(1,-2,-1),0.2);
+
+    RBF f = std::function<float(glm::vec3)>(mb);
+
 //    RBF func = [](glm::vec3 pos){return std::sin(pos.x*pos.y*5+pos.z*pos.x*5+pos.y*pos.z*5) + std::sin(pos.y*pos.z*5) + std::sin(pos.y*pos.x*5) + std::sin(pos.x*pos.z*5) -1 ;};
 
-    _objects.emplace_back(std::make_unique<IsoSurface>(func, glm::vec3(-2,-2,-2),0.1,glm::vec3{1.5,1.f,0},glm::vec3{1,0,0}));
+//    _objects.emplace_back(std::make_unique<IsoSurface>(funcCercle, glm::vec3(-2,-2,-2),0.1,glm::vec3{0,1,0},glm::vec3{1,0,0}));
+//    _objects.emplace_back(std::make_unique<IsoSurface>(func, glm::vec3(-1.5,-1.5,-1.5),0.1,glm::vec3{-1.5,1.f,2.f},glm::vec3{1,0,0}));
+    _objects.emplace_back(std::make_unique<IsoSurface>(f, glm::vec3(-5,-5,-5),0.1,glm::vec3{1,2.2,1},glm::vec3{1,0,0}));
 
-        _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
+//        _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
 //    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1,-0.5,1),glm::vec3(1),1,480));
 //
 //
@@ -142,8 +153,8 @@ void Scene::setupObjects() {
 
 void Scene::setupLights() {
     _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
-    //_directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
-    //_directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
+    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
+    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
 
 
 //     _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(0,5,-1), glm::vec3(0.8,0.2,1)));

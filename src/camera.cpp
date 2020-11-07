@@ -7,7 +7,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 look, float zoom) :  
                                                                                 _front(look - position),
                                                                                 _up(up),
                                                                                 _speed(5.f),
-                                                                                _sensitivity(10.f),
+                                                                                _sensitivity(.5f),
                                                                                 _zoom(zoom) {
     _worldUp = _up;
     _yaw = -90.f;
@@ -44,8 +44,8 @@ void Camera::move(int x, int y, float deltaTime) {
     float yoffset = _startY - y;
     _startX = x;
     _startY = y;
-    xoffset *= _sensitivity*deltaTime;
-    yoffset *= _sensitivity*deltaTime;
+    xoffset *= _sensitivity;
+    yoffset *= _sensitivity;
     _yaw += xoffset;
     _pitch += yoffset;
 
@@ -80,7 +80,7 @@ void Camera::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void Camera::update(float deltaTime) {
-    glm::vec2 dir{};
+    glm::vec3 dir{};
     for (const auto key : _keys) {
         switch (key) {
             case Qt::Key_Z:
@@ -95,13 +95,19 @@ void Camera::update(float deltaTime) {
             case Qt::Key_Q:
                 dir.y -= 1;
                 break;
+            case Qt::Key_Shift:
+                dir.z -= 1;
+                break;
+            case Qt::Key_Space:
+                dir.z += 1;
+                break;
             default:
                 break;
         }
     }
     if (glm::length(dir) > 0) {
         dir = glm::normalize(dir);
-        _position += (_front * dir.x + _right * dir.y) * _speed * deltaTime;
+        _position += (_front * dir.x + _right * dir.y + _worldUp * dir.z) * _speed * deltaTime;
     }
 }
 

@@ -3,14 +3,14 @@
 
 #include <QOpenGLWidget>
 #include <QtWidgets/QMessageBox>
-#include <QOpenGLFunctions_4_1_Core>
+#include <QOpenGLFunctions_4_5_Core>
 #include <memory>
 #include <QKeyEvent>
 #include <QDateTime>
 
 #include "scene.h"
 
-class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
+class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_5_Core {
 Q_OBJECT
 public:
     explicit GlWidget(QWidget *parent = nullptr);

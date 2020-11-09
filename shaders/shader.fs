@@ -27,12 +27,19 @@ uniform vec3 cameraPos;
 uniform int nbPointLight;
 uniform int nbDirectionalLight;
 uniform int shadowMapSize;
+//uniform float time;
 
 uniform sampler2DShadow shadowMaps[N_MAX_DIR_LIGHT];
 
 uniform PointLight pointLights[N_MAX_POINT_LIGHT];
 uniform DirectionalLight directionalLights[N_MAX_DIR_LIGHT];
 
+const vec2 poissonDisk[4] = vec2[](
+    vec2( -0.94201624, -0.39906216 ),
+    vec2( 0.94558609, -0.76890725 ),
+    vec2( -0.094184101, -0.92938870 ),
+    vec2( 0.34495938, 0.29387760 )
+);
 
 
 out vec4 color;
@@ -50,13 +57,23 @@ float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
 
     for (int y = -1 ; y <= 1 ; y++) {
         for (int x = -1 ; x <= 1 ; x++) {
+
             vec2 Offsets = vec2(x * Offset, y * yOffset);
-            vec3 UVC = vec3(projCoords.xy + Offsets, projCoords.z - EPSILON );
-            shadow += texture(shadowMap, UVC);
+            for (int i=0;i<4;i++){
+                vec3 UVC = vec3(projCoords.xy + poissonDisk[i]/700.f + Offsets, projCoords.z - EPSILON );
+                shadow += texture(shadowMap, UVC);
+            }
         }
     }
 
-    return 0.1f+(shadow / 10.f);
+
+
+//    for (int i=0;i<4;i++){
+//        vec3 UVC = vec3(projCoords.xy + poissonDisk[i]/700.f, projCoords.z - EPSILON );
+//        shadow += texture(shadowMap, UVC);
+//    }
+
+    return 0.1f+(shadow / 40.f);
 }
 
 vec3 fresnel(vec3 F, float cos) {

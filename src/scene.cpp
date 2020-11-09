@@ -23,9 +23,14 @@ void Scene::resize(int width, int height) {
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 }
 
-void Scene::draw(GLint qt_framebuffer, float deltaTime) {
+void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glClearColor(.9f,1.f,1.f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
+
+//    _objects.back()->translate(glm::vec3(std::sin(time)*deltaTime,0.f,std::cos(time)*deltaTime));
+
+    _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
+
 
     _camera.update(deltaTime);
 
@@ -68,7 +73,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime) {
     _shader->setInt("nbDirectionalLight", _directionalLights.size());
     _shader->setInt("nbDirLights", _directionalLights.size());
 
-
+//    _shader->setFloat("time",time);
 
     i = 0;
     for(const auto& light : _pointLights) {
@@ -104,7 +109,6 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime) {
 
 
 void Scene::click(unsigned button, int x, int y) {
-    _button = button;
     _camera.click(button,x,y);
 }
 
@@ -130,7 +134,6 @@ void Scene::setupObjects() {
     _objects.emplace_back(std::make_unique<IsoSurface>(mb, glm::vec3(-5,-5,-5),0.1,glm::vec3{1,2.2,1},glm::vec3{1,0,0}));
     _objects.back()->scale(glm::vec3(0.5));
 
-
     MetaBalls mb2;
     mb2.addMetaBall(glm::vec3(0),0.06);
     mb2.addMetaBall(glm::vec3(0.4),0.01);
@@ -141,9 +144,6 @@ void Scene::setupObjects() {
     mb2.addMetaBall(glm::vec3(-0.4,0.4,-0.4),0.01);
     mb2.addMetaBall(glm::vec3(0.4,-0.4,-0.4),0.01);
     mb2.addMetaBall(glm::vec3(-0.4,-0.4,0.4),0.01);
-
-    _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1,-1,-1),0.03,glm::vec3{-1,1,-1},glm::vec3{1,0,0.5}));
-
 
 
 //    _objects.emplace_back(std::make_unique<IsoSurface>(funcCercle, glm::vec3(-2,-2,-2),0.1,glm::vec3{0,1,0},glm::vec3{1,0,0}));
@@ -165,6 +165,8 @@ void Scene::setupObjects() {
 //    _objects.back()->rotateZ(-45.f);
 
     _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(1,1,1),10));
+    _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1,-1,-1),0.03,glm::vec3{-1,1,-1},glm::vec3{1,0,0.5}));
+
 }
 
 void Scene::setupLights() {

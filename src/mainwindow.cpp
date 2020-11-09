@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setDepthBufferSize(24);
     format.setSamples(3);
-    format.setSwapInterval(0);
+//    format.setSwapInterval(0);
     QSurfaceFormat::setDefaultFormat(format);
 
 

@@ -22,7 +22,7 @@ public:
     ~Scene() = default;
 
     void resize(int width, int height);
-    void draw(GLint qt_framebuffer, float deltaTime);
+    void draw(GLint qt_framebuffer, float deltaTime, float time);
 
     void click(unsigned button, int x, int y);
     void move(int x, int y, float deltaTime);
@@ -38,7 +38,6 @@ private:
     const unsigned SHADOW_WIDTH = 2048;
     const unsigned SHADOW_HEIGHT = 2048;
 
-    unsigned _button;
 
 
     glm::mat4 _view{};

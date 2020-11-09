@@ -3,6 +3,7 @@
 
 GlWidget::GlWidget(QWidget *parent) : QOpenGLWidget(parent){
     _lastTime = QDateTime::currentMSecsSinceEpoch();
+    _firstTime = _lastTime;
 
 }
 
@@ -39,7 +40,7 @@ void GlWidget::paintGL() {
     }
 
 
-    _scene->draw(context()->defaultFramebufferObject(), _deltaTime);
+    _scene->draw(context()->defaultFramebufferObject(), _deltaTime, static_cast<float>(_lastTime - _firstTime)/1000.f);
     glFinish();
 
     std::int64_t time = QDateTime::currentMSecsSinceEpoch();

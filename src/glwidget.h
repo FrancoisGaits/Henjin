@@ -42,6 +42,7 @@ private:
     bool _lines = false;
 
     std::int64_t _lastTime;
+    std::int64_t _firstTime;
     float _deltaTime;
 
 };

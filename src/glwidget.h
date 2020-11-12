@@ -20,6 +20,8 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
 
+    void changeScene(unsigned sceneNumber);
+
 public slots:
     void cleanup();
 

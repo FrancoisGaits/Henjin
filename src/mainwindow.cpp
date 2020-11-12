@@ -50,3 +50,11 @@ void MainWindow::resizeWindow(int width, int height) {
 MainWindow::~MainWindow() {
     delete ui;
 }
+
+void MainWindow::on_actionScene_1_triggered() {
+    glWidget->changeScene(0);
+}
+
+void MainWindow::on_actionScene_2_triggered() {
+    glWidget->changeScene(1);
+}

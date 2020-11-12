@@ -60,7 +60,7 @@ float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
 
             vec2 Offsets = vec2(x * Offset, y * yOffset);
             for (int i=0;i<4;i++){
-                vec3 UVC = vec3(projCoords.xy + poissonDisk[i]/700.f + Offsets, projCoords.z - EPSILON );
+                vec3 UVC = vec3(projCoords.xy + (poissonDisk[i]*3.f)/shadowMapSize + Offsets, projCoords.z - EPSILON );
                 shadow += texture(shadowMap, UVC);
             }
         }
@@ -107,6 +107,11 @@ vec3 diffuseFresnel(vec3 ior) {
     vec3 num = ior * mix(vec3(0.1921156102251088), ior * 298.25 - 261.38 * iorSq + 138.43, TIR);
     num += mix(vec3(0.8078843897748912), vec3(-1.67), TIR);
     return num * invdenum;
+}
+
+vec3 tonemapFilmic(const vec3 color) {
+    vec3 x = max(vec3(0.0), color - 0.004);
+    return (x * (6.2 * x + 0.5)) / (x * (6.2 * x + 1.7) + 0.06);
 }
 
 void main() {
@@ -180,8 +185,10 @@ void main() {
     vec3 hdr = (direct+ambiant)*4;
 
 
-    vec3 mapped = hdr/ (vec3(1) + hdr);
-    mapped = pow(mapped, vec3(1.f/2.2));
+    vec3 mapped = tonemapFilmic(hdr);
+
+//    vec3 mapped = hdr/ (vec3(1) + hdr);
+//    mapped = pow(mapped, vec3(1.f/2.2));
 
 
     color = vec4(mapped,1);

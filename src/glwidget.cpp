@@ -129,3 +129,10 @@ void GlWidget::keyReleaseEvent(QKeyEvent *event) {
             break;
     }
 }
+
+void GlWidget::changeScene(unsigned sceneNumber) {
+    _firstTime = QDateTime::currentMSecsSinceEpoch();
+    makeCurrent();
+    _scene->changeScene(sceneNumber);
+    doneCurrent();
+}

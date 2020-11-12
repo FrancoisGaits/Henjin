@@ -29,11 +29,35 @@
     </property>
     <addaction name="actionOpenGl_Info"/>
    </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+    <widget class="QMenu" name="menuChange_Scene">
+     <property name="title">
+      <string>Change Scene</string>
+     </property>
+     <addaction name="actionScene_1"/>
+     <addaction name="actionScene_2"/>
+    </widget>
+    <addaction name="menuChange_Scene"/>
+   </widget>
    <addaction name="menuInfos"/>
+   <addaction name="menuScene"/>
   </widget>
   <action name="actionOpenGl_Info">
    <property name="text">
     <string>OpenGl Info</string>
+   </property>
+  </action>
+  <action name="actionScene_1">
+   <property name="text">
+    <string>Scene 1</string>
+   </property>
+  </action>
+  <action name="actionScene_2">
+   <property name="text">
+    <string>Scene 2</string>
    </property>
   </action>
  </widget>

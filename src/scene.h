@@ -31,14 +31,17 @@ public:
     void cameraKeyReleaseEvent(QKeyEvent *event);
     void reloadShader();
 
+    void changeScene(unsigned sceneNumber);
+
+
 private:
     int _width;
     int _height;
 
-    const unsigned SHADOW_WIDTH = 2048;
-    const unsigned SHADOW_HEIGHT = 2048;
+    const unsigned SHADOW_WIDTH = 4096;
+    const unsigned SHADOW_HEIGHT = 4096;
 
-
+    MetaBalls _mb;
 
     glm::mat4 _view{};
     glm::mat4 _projection{};
@@ -54,9 +57,14 @@ private:
     std::vector<GLuint> _depthMapFBOs;
     std::vector<GLuint> _depthMaps;
 
+    unsigned _sceneNumber = 0;
+
+
     void setupObjects();
     void setupLights();
     void setupShadows();
+
+    void updateScene(float deltaTime, float time);
 };
 
 #endif //HENJIN_SCENE_H

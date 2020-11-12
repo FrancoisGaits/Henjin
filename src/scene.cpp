@@ -27,11 +27,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glClearColor(.9f,1.f,1.f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
 
-//    _objects.back()->translate(glm::vec3(std::sin(time)*deltaTime,0.f,std::cos(time)*deltaTime));
-
-    _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
-
-
+    updateScene(deltaTime, time);
     _camera.update(deltaTime);
 
     //shadows
@@ -122,65 +118,95 @@ void Scene::resetCamera() {
 }
 
 void Scene::setupObjects() {
-    ImplicitFunction funcCercle = [](glm::vec3 pos){return (pos.x * pos.x + pos.y * pos.y + pos.z * pos.z) - 0.5f;};
-    ImplicitFunction func = [](glm::vec3 pos){return (3 * pos.x * pos.x - pos.y * pos.y) + (3 * pos.z * pos.z) - 1.f;};
+    _objects.clear();
 
-    MetaBalls mb;
-    mb.addMetaBall(glm::vec3(0),0.9);
-    mb.addMetaBall(glm::vec3(2),0.6);
-    mb.addMetaBall(glm::vec3(-1,2,1),0.1);
-    mb.addMetaBall(glm::vec3(1,-2,-1),0.2);
-
-    _objects.emplace_back(std::make_unique<IsoSurface>(mb, glm::vec3(-5,-5,-5),0.1,glm::vec3{1,2.2,1},glm::vec3{1,0,0}));
-    _objects.back()->scale(glm::vec3(0.5));
-
-    MetaBalls mb2;
-    mb2.addMetaBall(glm::vec3(0),0.06);
-    mb2.addMetaBall(glm::vec3(0.4),0.01);
-    mb2.addMetaBall(glm::vec3(-0.4),0.01);
-    mb2.addMetaBall(glm::vec3(-0.4,0.4,0.4),0.01);
-    mb2.addMetaBall(glm::vec3(0.4,-0.4,0.4),0.01);
-    mb2.addMetaBall(glm::vec3(0.4,0.4,-0.4),0.01);
-    mb2.addMetaBall(glm::vec3(-0.4,0.4,-0.4),0.01);
-    mb2.addMetaBall(glm::vec3(0.4,-0.4,-0.4),0.01);
-    mb2.addMetaBall(glm::vec3(-0.4,-0.4,0.4),0.01);
+//    ImplicitFunction funcCercle = [](glm::vec3 pos){return (pos.x * pos.x + pos.y * pos.y + pos.z * pos.z) - 0.5f;};
+//    ImplicitFunction func = [](glm::vec3 pos){return (3 * pos.x * pos.x - pos.y * pos.y) + (3 * pos.z * pos.z) - 1.f;};
 
 
-//    _objects.emplace_back(std::make_unique<IsoSurface>(funcCercle, glm::vec3(-2,-2,-2),0.1,glm::vec3{0,1,0},glm::vec3{1,0,0}));
-//    _objects.emplace_back(std::make_unique<IsoSurface>(func, glm::vec3(-1.5,-1.5,-1.5),0.1,glm::vec3{-1.5,1.f,2.f},glm::vec3{1,0,0}));
+    switch (_sceneNumber) {
+        case 0:
+        {
+            MetaBalls mb;
+            mb.addMetaBall(glm::vec3(0), 0.9);
+            mb.addMetaBall(glm::vec3(2), 0.6);
+            mb.addMetaBall(glm::vec3(-1, 2, 1), 0.1);
+            mb.addMetaBall(glm::vec3(1, -2, -1), 0.2);
 
+            MetaBalls mb2;
+            mb2.addMetaBall(glm::vec3(0), 0.06);
+            mb2.addMetaBall(glm::vec3(0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(-0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(-0.4, 0.4, 0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(0.4, -0.4, 0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(0.4, 0.4, -0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(-0.4, 0.4, -0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(0.4, -0.4, -0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(-0.4, -0.4, 0.4), 0.01);
 
-        _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(0,-0.5,0),glm::vec3(1),1,500));
-//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(1,-0.5,1),glm::vec3(1),1,480));
-//
-//
-//    _objects.emplace_back(std::make_unique<Model>("aya3.obj",glm::vec3(-1,-0.5,1),glm::vec3(1),1,600));
-//
-//    _objects.back()->translate(glm::vec3(0,1.5,1));
-//    _objects.back()->rotateY(180.f);
-//    _objects.back()->rotateX(180.f);
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb, glm::vec3(-5, -5, -5), 0.1, glm::vec3{1, 2.2, 1},
+                                                               glm::vec3{1, 0, 0}));
+            _objects.back()->scale(glm::vec3(0.5));
 
+            _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(1), 1, 500));
 
-//    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,0,0),glm::vec3(1,1,1),1));
-//    _objects.back()->rotateZ(-45.f);
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10000));
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1, -1, -1), 0.03, glm::vec3{-1, 1, -1},
+                                                               glm::vec3{1, 0, 0.5}));
+            break;
+        }
 
-    _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0,-0.5,0),glm::vec3(1,1,1),10));
-    _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1,-1,-1),0.03,glm::vec3{-1,1,-1},glm::vec3{1,0,0.5}));
+        case 1:
+        {
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10000));
+            _mb.clear();
 
+            _mb.addMetaBall(glm::vec3(0.25), 0.01);
+            _mb.addMetaBall(glm::vec3(-0.25), 0.01);
+            _mb.addMetaBall(glm::vec3(-0.25, 0.25, 0.25), 0.01);
+            _mb.addMetaBall(glm::vec3(-0.25, -0.25, 0.25), 0.01);
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.75), 0.05, glm::vec3{0, 0.5, 2},
+                                                               glm::vec3{0.1, 0.9, 0.1}));
+            break;
+        }
+        default:
+            break;
+
+    }
 }
 
 void Scene::setupLights() {
-    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
-    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
-    _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
+    _directionalLights.clear();
+    _pointLights.clear();
 
-
-//     _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(0,5,-1), glm::vec3(0.8,0.2,1)));
-//    _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3(-5, 5, 5), glm::vec3(0.8, 0, 0)));
+    switch (_sceneNumber) {
+        case 0 :
+            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
+            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
+            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
+            break;
+        case 1:
+            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
+            break;
+        default:
+            break;
+    }
 }
 
 void Scene::setupShadows() {
     unsigned i = 0;
+    float borderColor = 1.f;
+
+    for(const auto fbo : _depthMapFBOs) {
+        glDeleteFramebuffers(1,&fbo);
+    }
+    _depthMapFBOs.clear();
+
+    for(const auto map : _depthMaps) {
+        glDeleteTextures(1,&map);
+    }
+    _depthMaps.clear();
 
     _shader->use();
     for(const auto & light : _directionalLights) {
@@ -195,10 +221,12 @@ void Scene::setupShadows() {
                      nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR,&borderColor);
 
         // attach depth texture as FBO's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBOs.back());
@@ -237,5 +265,45 @@ void Scene::cameraKeyEvent(QKeyEvent *event) {
 
 void Scene::cameraKeyReleaseEvent(QKeyEvent *event) {
     _camera.keyReleaseEvent(event);
+}
+
+void Scene::changeScene(unsigned sceneNumber) {
+    if(sceneNumber == _sceneNumber) return;
+
+    _sceneNumber = sceneNumber;
+
+    setupObjects();
+    setupLights();
+    setupShadows();
+}
+
+void Scene::updateScene(float deltaTime, float time) {
+
+    switch (_sceneNumber) {
+        case 0:
+//            _objects.back()->translate(glm::vec3(std::sin(time)*deltaTime,0.f,std::cos(time)*deltaTime));
+            _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
+            break;
+        case 1:
+        {
+            float sinTime = std::sin(time / 2.f);
+            int sinSign = (sinTime > 0) ? 1 : ((sinTime < 0) ? -1 : 0);
+
+            _objects.erase(_objects.end());
+
+            _mb.moveBalls(glm::vec3(0), 0.05f * deltaTime, sinSign);
+            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.45), 0.03, glm::vec3{0, 0.5, 2},
+                                                               glm::vec3{0.1, 0.9, 0.1}));
+            break;
+        }
+        default:
+            break;
+    }
+
+
+
+
+
+
 }
 

@@ -166,7 +166,7 @@ void Scene::setupObjects() {
             _mb.addMetaBall(glm::vec3(-0.25, 0.25, 0.25), 0.01);
             _mb.addMetaBall(glm::vec3(-0.25, -0.25, 0.25), 0.01);
 
-            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.75), 0.05, glm::vec3{0, 0.5, 2},
+            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.75), 0.05, glm::vec3{0, 1, 0},
                                                                glm::vec3{0.1, 0.9, 0.1}));
             break;
         }
@@ -292,8 +292,9 @@ void Scene::updateScene(float deltaTime, float time) {
             _objects.erase(_objects.end());
 
             _mb.moveBalls(glm::vec3(0), 0.05f * deltaTime, sinSign);
-            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.45), 0.03, glm::vec3{0, 0.5, 2},
+            _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.45), 0.03, glm::vec3{0, 1, 0},
                                                                glm::vec3{0.1, 0.9, 0.1}));
+            _objects.back()->scale(glm::vec3(3));
             break;
         }
         default:

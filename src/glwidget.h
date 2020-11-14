@@ -21,6 +21,13 @@ public:
     QSize sizeHint() const override;
 
     void changeScene(unsigned sceneNumber);
+    void setBloom(bool bloom);
+    void setExposure(float exposure);
+    void setToneMapping(ToneMapping tm);
+
+    bool getBloom();
+    float getExposure();
+    ToneMapping getToneMapping();
 
 public slots:
     void cleanup();
@@ -42,6 +49,8 @@ protected:
 private:
     std::unique_ptr<Scene> _scene;
     bool _lines = false;
+
+    float _sceneExposure = 1.f;
 
     std::int64_t _lastTime;
     std::int64_t _firstTime;

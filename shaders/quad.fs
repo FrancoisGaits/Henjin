@@ -1,9 +1,13 @@
 #version 460 core
-out vec4 color;
+layout (location = 0) out vec4 color;
 
 in vec2 TexCoords;
 
 uniform sampler2D hdrBuffer;
+uniform sampler2D bloomBuffer;
+
+uniform bool bloom;
+uniform int toneMapping;
 
 float luminance(vec3 v)
 {
@@ -32,17 +36,31 @@ void main() {
     vec3 hdr = texture(hdrBuffer, TexCoords).rgb;
     //    vec3 mapped = tonemapFilmic_lumin(hdr);
 
+    if(bloom) {
+        vec3 bloom_color = texture(bloomBuffer, TexCoords).rgb;
 
-    if(luminance(hdr)>0.0f) {
-
-        //    vec3 mapped = tonemapFilmic(hdr);
-        vec3 mapped = tonemapFilmic_lumin(hdr);
-        //    vec3 mapped = hdr/ (vec3(1) + hdr);
-
-        mapped = pow(mapped, vec3(1.f/2.2));
-        color = vec4(mapped, 1);
-    } else {
-        color = vec4(0,0,0,1);
+        hdr += bloom_color;
     }
+
+    vec3 mapped;
+    switch(toneMapping){
+        case 1:
+            mapped = tonemapFilmic(hdr);
+            break;
+        case 2:
+            mapped = tonemapFilmic_lumin(hdr);
+            break;
+        case 3:
+            mapped = hdr/ (vec3(1) + hdr);
+            break;
+        case 0:
+        default:
+            mapped = hdr;
+            break;
+    }
+
+    mapped = pow(mapped, vec3(1.f/2.2));
+    color = vec4(mapped, 1);
+
 
 }

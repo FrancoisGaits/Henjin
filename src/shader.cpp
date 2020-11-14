@@ -20,6 +20,10 @@ Shader::Shader(ShaderType type) {
             vertexPath = "../shaders/quad.vs";
             fragmentPath = "../shaders/quad.fs";
             break;
+        case BLUR:
+            vertexPath = "../shaders/quad.vs";
+            fragmentPath = "../shaders/blur.fs";
+            break;
     }
 
     std::string vertexCode;
@@ -95,9 +99,6 @@ Shader::Shader(ShaderType type) {
 
     glDeleteShader(vertexshader);
     glDeleteShader(fragmentshader);
-
-    std::cout << "Shader created ID : " << ID << std::endl;
-
 }
 
 void Shader::setBool(const std::string &name, bool value) const {
@@ -145,7 +146,6 @@ void Shader::use() {
 }
 
 Shader::~Shader() {
-    std::cout << "Shader deletion ID : " << ID << std::endl;
     glDeleteProgram(ID);
 }
 

@@ -2,6 +2,7 @@
 #define HENJIN_MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
+#include <QInputDialog>
 #include "glwidget.h"
 
 namespace Ui {
@@ -27,6 +28,11 @@ private slots:
 
     void on_actionScene_1_triggered();
     void on_actionScene_2_triggered();
+    void on_actionScene_3_triggered();
+
+    void on_actionBloom_triggered();
+    void on_actionExposure_triggered();
+    void on_actionToneMapping_triggered();
 
 };
 

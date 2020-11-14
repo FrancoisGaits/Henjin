@@ -23,7 +23,8 @@
 enum ShaderType {
     HDR,
     SHADOW,
-    QUAD
+    QUAD,
+    BLUR
 };
 
 class Shader {

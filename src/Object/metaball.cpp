@@ -12,7 +12,7 @@ float MetaBall::f(glm::vec3 pos) const {
     if(d>_threshold || d == 0.f)
         return 0;
 
-    return (_radius/d)* static_cast<float>(_type);
+    return (std::pow(_radius,2.f)/d)* static_cast<float>(_type);
 }
 
 void MetaBall::move(glm::vec3 pos, float intensity, int moveType) {

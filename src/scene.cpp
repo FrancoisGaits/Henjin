@@ -7,6 +7,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
 
     _shader = std::make_unique<Shader>(HDR);
     _quadShader = std::make_unique<Shader>(QUAD);
+    _blurShader = std::make_unique<Shader>(BLUR);
     _camera.setviewport(glm::vec4(0.f,0.f,_width,_height));
     _view = _camera.viewmatrix();
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
@@ -62,7 +63,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
-    glClearColor(.2f,1.f,1.f,1.0f);
+    glClearColor(.025f,.125f,.125f,1.0f);
 
 
     _view = _camera.viewmatrix();
@@ -76,6 +77,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     _shader->setInt("nbPointLight", _pointLights.size());
     _shader->setInt("nbDirectionalLight", _directionalLights.size());
     _shader->setInt("nbDirLights", _directionalLights.size());
+    _shader->setFloat("exposure",_exposure);
 
 //    _shader->setFloat("time",time);
 
@@ -111,13 +113,37 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    bool horizontal = true;
+    if(_bloom) {
+        bool firstIteration = true;
+        int amount = 10;
+        _blurShader->use();
+        for (unsigned int k = 0; k < amount; k++) {
+            glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[horizontal]);
+            _blurShader->setInt("horizontal", horizontal);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(
+                    GL_TEXTURE_2D, firstIteration ? _quads[1] : _pingpong[!horizontal]
+            );
+            renderQuad.draw();
+            horizontal = !horizontal;
+            if (firstIteration)
+                firstIteration = false;
+        }
+    }
+
     _quadShader->use();
+    _quadShader->setBool("bloom",_bloom);
+    _quadShader->setInt("toneMapping",_toneMapping);
     glBindFramebuffer(GL_FRAMEBUFFER, qt_framebuffer);
     glDisable(GL_DEPTH_TEST);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _quad);
+    glBindTexture(GL_TEXTURE_2D, _quads[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, _pingpong[!horizontal]);
+
     renderQuad.draw();
 
 }
@@ -148,21 +174,21 @@ void Scene::setupObjects() {
         case 0:
         {
             MetaBalls mb;
-            mb.addMetaBall(glm::vec3(0), 0.9);
-            mb.addMetaBall(glm::vec3(2), 0.6);
-            mb.addMetaBall(glm::vec3(-1, 2, 1), 0.1);
-            mb.addMetaBall(glm::vec3(1, -2, -1), 0.2);
+            mb.addMetaBall(glm::vec3(0), 0.9486);
+            mb.addMetaBall(glm::vec3(2), 0.7746);
+            mb.addMetaBall(glm::vec3(-1, 2, 1), 0.3162);
+            mb.addMetaBall(glm::vec3(1, -2, -1), 0.4472);
 
             MetaBalls mb2;
-            mb2.addMetaBall(glm::vec3(0), 0.06);
-            mb2.addMetaBall(glm::vec3(0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(-0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(-0.4, 0.4, 0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(0.4, -0.4, 0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(0.4, 0.4, -0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(-0.4, 0.4, -0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(0.4, -0.4, -0.4), 0.01);
-            mb2.addMetaBall(glm::vec3(-0.4, -0.4, 0.4), 0.01);
+            mb2.addMetaBall(glm::vec3(0), 0.2449);
+            mb2.addMetaBall(glm::vec3(0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(-0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(-0.4, 0.4, 0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(0.4, -0.4, 0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(0.4, 0.4, -0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(-0.4, 0.4, -0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(0.4, -0.4, -0.4), 0.1);
+            mb2.addMetaBall(glm::vec3(-0.4, -0.4, 0.4), 0.1);
 
             _objects.emplace_back(std::make_unique<IsoSurface>(mb, glm::vec3(-5, -5, -5), 0.1, glm::vec3{1, 2.2, 1},
                                                                glm::vec3{1, 0, 0}));
@@ -170,7 +196,7 @@ void Scene::setupObjects() {
 
             _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(1,1,1), 1, 500));
 
-            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.3, 0.3, 0.3), 10000));
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.1, 0.1, 0.1), 10000));
             _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1, -1, -1), 0.03, glm::vec3{-1, 1, -1},
                                                                glm::vec3{1, 0, 0.5}));
             break;
@@ -181,14 +207,66 @@ void Scene::setupObjects() {
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10000));
             _mb.clear();
 
-            _mb.addMetaBall(glm::vec3(0.25), 0.01);
-            _mb.addMetaBall(glm::vec3(-0.25), 0.01);
-            _mb.addMetaBall(glm::vec3(-0.25, 0.25, 0.25), 0.01);
-            _mb.addMetaBall(glm::vec3(-0.25, -0.25, 0.25), 0.01);
+            _mb.addMetaBall(glm::vec3(0.25), 0.1);
+            _mb.addMetaBall(glm::vec3(-0.25), 0.1);
+            _mb.addMetaBall(glm::vec3(-0.25, 0.25, 0.25), 0.1);
+            _mb.addMetaBall(glm::vec3(-0.25, -0.25, 0.25), 0.1);
 //            _mb.addMetaBall(glm::vec3(0), 0.05, NEGATIVE);
 
             _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.75), 0.05, glm::vec3{0, 1, 0},
                                                                glm::vec3{0.1, 0.9, 0.1}));
+            break;
+        }
+        case 2: {
+            MetaBalls mb;
+            mb.addMetaBall(glm::vec3(0.4,0,0),0.25);
+            mb.addMetaBall(glm::vec3(-0.4,0,0),0.25);
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-1),0.05,glm::vec3{0.25,1,0},glm::vec3{1,1,1}));
+
+            mb.moveBalls(glm::vec3{0},0.1,NEGATIVE);
+            mb.addMetaBall(glm::vec3{0},0.1);
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-1),0.05,glm::vec3{1,0,1},glm::vec3{1,1,1}));
+
+            mb.clear();
+            mb.addMetaBall(glm::vec3{0},0.4);
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-1),0.05,glm::vec3{-2,0,-1},glm::vec3{1,1,1}));
+
+            mb.clear();
+            mb.addMetaBall(glm::vec3{0.2,0.2,0.1},0.1);
+            mb.addMetaBall(glm::vec3{-0.2,0.2,0.1},0.05);
+            mb.addMetaBall(glm::vec3{0.2,-0.2,-0.1},0.05);
+            mb.addMetaBall(glm::vec3{-0.2,-0.2,-0.1},0.1);
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-0.5),0.02,glm::vec3{-1,1,-0.5},glm::vec3{1,1,1}));
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-0.5),0.02,glm::vec3{-1,-0.5,0.5},glm::vec3{1,1,1}));
+            _objects.back()->rotateX(81);
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-0.5),0.02,glm::vec3{0.5,-1,0.5},glm::vec3{1,1,1}));
+            _objects.back()->rotateY(55);
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb,glm::vec3(-0.5),0.02,glm::vec3{1,0.5,-0.5},glm::vec3{1,1,1}));
+            _objects.back()->rotateZ(190);
+
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{0,0,-30},glm::vec3{0},100000));
+            _objects.back()->rotateX(90);
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{30,0,0},glm::vec3{0},100000));
+            _objects.back()->rotateZ(90);
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{-30,0,0},glm::vec3{0},100000));
+            _objects.back()->rotateZ(-90);
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{0,30,0},glm::vec3{0},100000));
+            _objects.back()->rotateY(90);
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{0,-30,0},glm::vec3{0},100000));
+            _objects.back()->rotateY(-90);
+
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3{0,0,30},glm::vec3{0},100000));
+            _objects.back()->rotateX(-90);
+
             break;
         }
         default:
@@ -210,6 +288,9 @@ void Scene::setupLights() {
         case 1:
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
             break;
+
+        case 2:
+            _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3{0,0,0},glm::vec3(10,10,10)));
         default:
             break;
     }
@@ -287,6 +368,16 @@ void Scene::reloadShader() {
 
         _quadShader->use();
         _quadShader->setInt("hdrBuffer",0);
+        _quadShader->setInt("bloomBuffer",1);
+
+    }
+
+    newShader = std::make_unique<Shader>(BLUR);
+    if(newShader->isValid()) {
+        _blurShader = std::move(newShader);
+
+        _blurShader->use();
+        _blurShader->setInt("image",0);
 
     }
 }
@@ -336,27 +427,83 @@ void Scene::updateScene(float deltaTime, float time) {
 void Scene::setupQuad() {
     //renderQuad
     glDeleteFramebuffers(1, &_quadFBO);
-    glDeleteTextures(1, &_quad);
+    glDeleteRenderbuffers(1, &_quadRBO);
+    glDeleteTextures(2, _quads);
 
     glGenFramebuffers(1, &_quadFBO);
     glGenRenderbuffers(1, &_quadRBO);
-
-    glGenTextures(1, &_quad);
-    glBindTexture(GL_TEXTURE_2D, _quad);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, _width, _height, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenTextures(2, _quads);
 
     glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _quad, 0);
+
+    for(unsigned i = 0; i < 2; ++i) {
+        glBindTexture(GL_TEXTURE_2D, _quads[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, _width, _height, 0, GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, _quads[i], 0);
+    }
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
 
     glBindRenderbuffer(GL_RENDERBUFFER, _quadRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _width, _height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _quadRBO);
 
+
+    glGenFramebuffers(2, _pingpongFBO);
+    glGenTextures(2, _pingpong);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, _pingpong[i]);
+        glTexImage2D(
+                GL_TEXTURE_2D, 0, GL_RGBA16F, _width, _height, 0, GL_RGBA, GL_FLOAT, nullptr
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(
+                GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pingpong[i], 0
+        );
+    }
+
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     _quadShader->use();
     _quadShader->setInt("hdrBuffer",0);
+    _quadShader->setInt("bloomBuffer",1);
+
+    _blurShader->use();
+    _blurShader->setInt("image",0);
+}
+
+void Scene::setBloom(bool bloom) {
+    _bloom = bloom;
+}
+
+void Scene::setExposure(float exposure) {
+    _exposure = exposure;
+}
+
+void Scene::setToneMapping(ToneMapping tm) {
+    _toneMapping = tm;
+}
+
+bool Scene::getBloom() {
+    return _bloom;
+}
+
+float Scene::getExposure() {
+    return _exposure;
+}
+
+ToneMapping Scene::getToneMapping() {
+    return _toneMapping;
 }
 

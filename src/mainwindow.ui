@@ -39,8 +39,18 @@
      </property>
      <addaction name="actionScene_1"/>
      <addaction name="actionScene_2"/>
+     <addaction name="actionScene_3"/>
+    </widget>
+    <widget class="QMenu" name="menuEdit_Parameters">
+     <property name="title">
+      <string>Edit Parameters</string>
+     </property>
+     <addaction name="actionBloom"/>
+     <addaction name="actionExposure"/>
+     <addaction name="actionToneMapping"/>
     </widget>
     <addaction name="menuChange_Scene"/>
+    <addaction name="menuEdit_Parameters"/>
    </widget>
    <addaction name="menuInfos"/>
    <addaction name="menuScene"/>
@@ -58,6 +68,26 @@
   <action name="actionScene_2">
    <property name="text">
     <string>Scene 2</string>
+   </property>
+  </action>
+  <action name="actionBloom">
+   <property name="text">
+    <string>Bloom</string>
+   </property>
+  </action>
+  <action name="actionExposure">
+   <property name="text">
+    <string>Exposure</string>
+   </property>
+  </action>
+  <action name="actionToneMapping">
+   <property name="text">
+    <string>ToneMapping</string>
+   </property>
+  </action>
+  <action name="actionScene_3">
+   <property name="text">
+    <string>Scene 3</string>
    </property>
   </action>
  </widget>

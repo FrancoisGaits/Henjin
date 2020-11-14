@@ -83,6 +83,19 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
                 _scene->cameraKeyEvent(event);
             break;
 
+        case Qt::Key_Plus:
+            if(_sceneExposure < 100.f) {
+                _sceneExposure += 0.1f;
+                setExposure(_sceneExposure);
+            }
+            break;
+
+        case Qt::Key_Minus:
+            if(_sceneExposure >= 0.2f) {
+                _sceneExposure -= 0.1f;
+                setExposure(_sceneExposure);
+            }
+            break;
 
         default:
 
@@ -135,4 +148,29 @@ void GlWidget::changeScene(unsigned sceneNumber) {
     makeCurrent();
     _scene->changeScene(sceneNumber);
     doneCurrent();
+}
+
+void GlWidget::setBloom(bool bloom) {
+    _scene->setBloom(bloom);
+}
+
+void GlWidget::setExposure(float exposure) {
+    _sceneExposure = exposure;
+    _scene->setExposure(exposure);
+}
+
+void GlWidget::setToneMapping(ToneMapping tm) {
+    _scene->setToneMapping(tm);
+}
+
+ToneMapping GlWidget::getToneMapping() {
+    return _scene->getToneMapping();
+}
+
+float GlWidget::getExposure() {
+    return _scene->getExposure();
+}
+
+bool GlWidget::getBloom() {
+    return _scene->getBloom();
 }

@@ -58,3 +58,49 @@ void MainWindow::on_actionScene_1_triggered() {
 void MainWindow::on_actionScene_2_triggered() {
     glWidget->changeScene(1);
 }
+
+
+void MainWindow::on_actionScene_3_triggered() {
+    glWidget->changeScene(2);
+}
+
+void MainWindow::on_actionBloom_triggered() {
+    bool ok;
+    QStringList l = {"On", "Off"};
+    QString text = QInputDialog::getItem(this, "Set Bloom", "Bloom : ", l, !glWidget->getBloom(), false, &ok);
+
+    if (ok) {
+        glWidget->setBloom(text == "On");
+    }
+}
+
+void MainWindow::on_actionExposure_triggered() {
+    bool ok;
+    double exp = QInputDialog::getDouble(this, "Set Exposure", "Exposure", glWidget->getExposure(),0.1,100.,1,&ok,Qt::WindowFlags(),0.1);
+
+    if(ok) {
+        glWidget->setExposure(static_cast<float>(exp));
+    }
+}
+
+void MainWindow::on_actionToneMapping_triggered() {
+    bool ok;
+    QStringList l = { "None", "Filmic", "Luminance Only Filmic", "Reinhard"};
+    QString text = QInputDialog::getItem(this, "Choose tone mapping", "Tone Mapping : ", l, glWidget->getToneMapping(), false, &ok);
+
+    if (ok) {
+        ToneMapping tm;
+        if(text == "Filmic") {
+            tm = FILMIC;
+        } else if (text == "Luminance Only Filmic") {
+            tm = FILMIC_LUMIN;
+        } else if (text == "Reinhard") {
+            tm = REINHARD;
+        } else {
+            tm = NONE;
+        }
+
+        glWidget->setToneMapping(tm);
+    }
+}
+

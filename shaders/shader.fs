@@ -34,6 +34,8 @@ uniform sampler2DShadow shadowMaps[N_MAX_DIR_LIGHT];
 uniform PointLight pointLights[N_MAX_POINT_LIGHT];
 uniform DirectionalLight directionalLights[N_MAX_DIR_LIGHT];
 
+uniform float exposure;
+
 const vec2 poissonDisk[4] = vec2[](
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),
@@ -41,8 +43,8 @@ const vec2 poissonDisk[4] = vec2[](
     vec2( 0.34495938, 0.29387760 )
 );
 
-
-out vec4 color;
+layout (location = 0) out vec4 color;
+layout (location = 1) out vec4 brightColor;
 
 float shadow(vec4 fragPosLight, sampler2DShadow shadowMap) {
     // perform perspective divide
@@ -102,6 +104,10 @@ vec3 diffuseFresnel(vec3 ior) {
     return num * invdenum;
 }
 
+float luminance(vec3 v)
+{
+    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+}
 
 void main() {
 //    color = vec4( clamp( dot( normalize(normal), normalize(lightPos-fragPosWorld)), 0, 1 ) * lightColor, 1.0);
@@ -171,5 +177,11 @@ void main() {
 
     vec3 ambiant = vec3(0.01) * fragColor;
 
-    color = vec4(direct+ambiant,1);
+    color = vec4(direct+ambiant,1)* exposure;
+
+    if(luminance(color.xyz)>1.f){
+        brightColor = color;
+    } else {
+        brightColor = vec4(0,0,0,1);
+    }
 }

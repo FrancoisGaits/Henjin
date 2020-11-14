@@ -16,6 +16,13 @@
 #include "src/Object/model.h"
 #include "src/Object/metaball.h"
 
+enum ToneMapping {
+    NONE = 0,
+    FILMIC,
+    FILMIC_LUMIN,
+    REINHARD
+};
+
 class Scene {
 public:
     explicit Scene(int width, int height);
@@ -33,6 +40,13 @@ public:
     void reloadShader();
 
     void changeScene(unsigned sceneNumber);
+    void setBloom(bool bloom);
+    void setExposure(float exposure);
+    void setToneMapping(ToneMapping tm);
+
+    bool getBloom();
+    float getExposure();
+    ToneMapping getToneMapping();
 
 
 private:
@@ -51,6 +65,7 @@ private:
     Shader _shadowShader = Shader(SHADOW);
     std::unique_ptr<Shader> _shader;
     std::unique_ptr<Shader> _quadShader;
+    std::unique_ptr<Shader> _blurShader;
 
     RenderQuad renderQuad;
 
@@ -63,11 +78,17 @@ private:
 
     GLuint _quadFBO;
     GLuint _quadRBO;
-    GLuint _quad;
+    GLuint _quads[2];
+
+    unsigned int _pingpongFBO[2];
+    unsigned int _pingpong[2];
 
     unsigned _sceneNumber = 0;
 
 
+    bool _bloom = false;
+    float _exposure = 1;
+    ToneMapping _toneMapping = FILMIC_LUMIN;
 
     void setupObjects();
     void setupLights();

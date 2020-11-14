@@ -20,10 +20,16 @@
 #include <sstream>
 #include <iostream>
 
+enum ShaderType {
+    HDR,
+    SHADOW,
+    QUAD
+};
+
 class Shader {
 
 public:
-    explicit Shader(bool shadows = false);
+    explicit Shader(ShaderType type);
 
     void use();
 

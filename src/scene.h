@@ -5,6 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <memory>
 #include <QtGui/QKeyEvent>
+#include <src/Object/renderquad.h>
 
 #include "src/Object/plane.h"
 #include "src/Object/isosurface.h"
@@ -47,8 +48,11 @@ private:
     glm::mat4 _projection{};
 
     Camera _camera;
+    Shader _shadowShader = Shader(SHADOW);
     std::unique_ptr<Shader> _shader;
-    Shader _shadowShader = Shader(true);
+    std::unique_ptr<Shader> _quadShader;
+
+    RenderQuad renderQuad;
 
     std::vector<std::unique_ptr<Shape>> _objects;
     std::vector<std::unique_ptr<PointLight>> _pointLights;
@@ -57,12 +61,18 @@ private:
     std::vector<GLuint> _depthMapFBOs;
     std::vector<GLuint> _depthMaps;
 
+    GLuint _quadFBO;
+    GLuint _quadRBO;
+    GLuint _quad;
+
     unsigned _sceneNumber = 0;
+
 
 
     void setupObjects();
     void setupLights();
     void setupShadows();
+    void setupQuad();
 
     void updateScene(float deltaTime, float time);
 };

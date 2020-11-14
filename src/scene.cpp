@@ -5,13 +5,15 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     glEnable(GL_MULTISAMPLE);
     glViewport(0,0,width,height);
 
-    _shader = std::make_unique<Shader>();
+    _shader = std::make_unique<Shader>(HDR);
+    _quadShader = std::make_unique<Shader>(QUAD);
     _camera.setviewport(glm::vec4(0.f,0.f,_width,_height));
     _view = _camera.viewmatrix();
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 
     setupObjects();
     setupLights();
+    setupQuad();
     setupShadows();
 
 }
@@ -21,11 +23,13 @@ void Scene::resize(int width, int height) {
     _height = height;
     _camera.setviewport(glm::vec4(0.f, 0.f, _width, _height));
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
+    setupQuad();
+    setupShadows();
+
 }
 
 void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
-    glClearColor(.9f,1.f,1.f,1.0f);
-    glClear(GL_COLOR_BUFFER_BIT );
+    glEnable(GL_DEPTH_TEST);
 
     updateScene(deltaTime, time);
     _camera.update(deltaTime);
@@ -55,7 +59,11 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
 
     //actual render
     glViewport(0,0,_width,_height);
-    glBindFramebuffer(GL_FRAMEBUFFER, qt_framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+
+    glClearColor(.2f,1.f,1.f,1.0f);
+
 
     _view = _camera.viewmatrix();
 
@@ -99,6 +107,18 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         object->draw();
     }
 
+
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    _quadShader->use();
+    glBindFramebuffer(GL_FRAMEBUFFER, qt_framebuffer);
+    glDisable(GL_DEPTH_TEST);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _quad);
+    renderQuad.draw();
 
 }
 
@@ -148,9 +168,9 @@ void Scene::setupObjects() {
                                                                glm::vec3{1, 0, 0}));
             _objects.back()->scale(glm::vec3(0.5));
 
-            _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(1), 1, 500));
+            _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(1,1,1), 1, 500));
 
-            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10000));
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.3, 0.3, 0.3), 10000));
             _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1, -1, -1), 0.03, glm::vec3{-1, 1, -1},
                                                                glm::vec3{1, 0, 0.5}));
             break;
@@ -165,6 +185,7 @@ void Scene::setupObjects() {
             _mb.addMetaBall(glm::vec3(-0.25), 0.01);
             _mb.addMetaBall(glm::vec3(-0.25, 0.25, 0.25), 0.01);
             _mb.addMetaBall(glm::vec3(-0.25, -0.25, 0.25), 0.01);
+//            _mb.addMetaBall(glm::vec3(0), 0.05, NEGATIVE);
 
             _objects.emplace_back(std::make_unique<IsoSurface>(_mb, glm::vec3(-0.75), 0.05, glm::vec3{0, 1, 0},
                                                                glm::vec3{0.1, 0.9, 0.1}));
@@ -182,7 +203,7 @@ void Scene::setupLights() {
 
     switch (_sceneNumber) {
         case 0 :
-            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
+            _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(4,4,4)));
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
             break;
@@ -195,9 +216,9 @@ void Scene::setupLights() {
 }
 
 void Scene::setupShadows() {
-    unsigned i = 0;
     float borderColor = 1.f;
 
+    //Shadow Mapping
     for(const auto fbo : _depthMapFBOs) {
         glDeleteFramebuffers(1,&fbo);
     }
@@ -208,7 +229,9 @@ void Scene::setupShadows() {
     }
     _depthMaps.clear();
 
+
     _shader->use();
+    unsigned i = 0;
     for(const auto & light : _directionalLights) {
         _depthMapFBOs.emplace_back(0);
         _depthMaps.emplace_back(0);
@@ -244,7 +267,7 @@ void Scene::setupShadows() {
 }
 
 void Scene::reloadShader() {
-    std::unique_ptr<Shader> newShader = std::make_unique<Shader>();
+    std::unique_ptr<Shader> newShader = std::make_unique<Shader>(HDR);
 
     if(newShader->isValid()) {
         _shader = std::move(newShader);
@@ -255,6 +278,15 @@ void Scene::reloadShader() {
         for(unsigned i=0; i < _directionalLights.size(); ++i) {
             _shader->setInt("shadowMaps[" + std::to_string(i) + "]", i);
         }
+
+    }
+
+    newShader = std::make_unique<Shader>(QUAD);
+    if(newShader->isValid()) {
+        _quadShader = std::move(newShader);
+
+        _quadShader->use();
+        _quadShader->setInt("hdrBuffer",0);
 
     }
 }
@@ -281,7 +313,6 @@ void Scene::updateScene(float deltaTime, float time) {
 
     switch (_sceneNumber) {
         case 0:
-//            _objects.back()->translate(glm::vec3(std::sin(time)*deltaTime,0.f,std::cos(time)*deltaTime));
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
             break;
         case 1:
@@ -300,11 +331,32 @@ void Scene::updateScene(float deltaTime, float time) {
         default:
             break;
     }
+}
 
+void Scene::setupQuad() {
+    //renderQuad
+    glDeleteFramebuffers(1, &_quadFBO);
+    glDeleteTextures(1, &_quad);
 
+    glGenFramebuffers(1, &_quadFBO);
+    glGenRenderbuffers(1, &_quadRBO);
 
+    glGenTextures(1, &_quad);
+    glBindTexture(GL_TEXTURE_2D, _quad);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, _width, _height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _quad, 0);
 
+    glBindRenderbuffer(GL_RENDERBUFFER, _quadRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _width, _height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _quadRBO);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    _quadShader->use();
+    _quadShader->setInt("hdrBuffer",0);
 }
 

@@ -1,10 +1,26 @@
 #include "shader.h"
 
-Shader::Shader(bool shadows) {
+Shader::Shader(ShaderType type) {
     _valid = true;
 
-    std::string vertexPath(shadows ? "../shaders/shadows.vs" : "../shaders/shader.vs");
-    std::string fragmentPath(shadows ? "../shaders/shadows.fs" : "../shaders/shader.fs");
+    std::string vertexPath;
+    std::string fragmentPath;
+
+
+    switch(type) {
+        case HDR :
+            vertexPath = "../shaders/shader.vs";
+            fragmentPath = "../shaders/shader.fs";
+            break;
+        case SHADOW:
+            vertexPath = "../shaders/shadows.vs";
+            fragmentPath = "../shaders/shadows.fs";
+            break;
+        case QUAD:
+            vertexPath = "../shaders/quad.vs";
+            fragmentPath = "../shaders/quad.fs";
+            break;
+    }
 
     std::string vertexCode;
     std::string fragmentCode;

@@ -2,7 +2,7 @@
 
 Scene::Scene(int width, int height) : _width(width), _height(height) {
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
+//    glEnable(GL_MULTISAMPLE);
     glViewport(0,0,width,height);
 
     _shader = std::make_unique<Shader>(HDR);
@@ -12,6 +12,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     _view = _camera.viewmatrix();
     _projection = glm::perspective(_camera.zoom(),float(_width)/float(_height),0.1f,100.f);
 
+    setupSkybox();
     setupObjects();
     setupLights();
     setupQuad();
@@ -31,6 +32,7 @@ void Scene::resize(int width, int height) {
 
 void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glEnable(GL_DEPTH_TEST);
+    glClearColor(.0f,.0f,.0f,1.0f);
 
     updateScene(deltaTime, time);
     _camera.update(deltaTime);
@@ -63,7 +65,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
-    glClearColor(.025f,.125f,.125f,1.0f);
+
 
 
     _view = _camera.viewmatrix();
@@ -110,14 +112,25 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     }
 
 
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    //skybox
+    glDepthFunc(GL_LEQUAL);
+    _skyboxShader.use();
+    _skyboxShader.setMat4fv("view", glm::mat4(glm::mat3(_view)));
+    _skyboxShader.setMat4fv("projection", _projection);
+
+    _skybox.bind(GL_TEXTURE0);
+    _skybox.draw();
+    glDepthFunc(GL_LESS);
+
 
     bool horizontal = true;
     if(_bloom) {
         bool firstIteration = true;
         int amount = 10;
         _blurShader->use();
+        _blurShader->setFloat("intensity",_bloomIntensity);
         for (unsigned int k = 0; k < amount; k++) {
             glBindFramebuffer(GL_FRAMEBUFFER, _pingpongFBO[horizontal]);
             _blurShader->setInt("horizontal", horizontal);
@@ -132,6 +145,8 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         }
     }
 
+
+
     _quadShader->use();
     _quadShader->setBool("bloom",_bloom);
     _quadShader->setInt("toneMapping",_toneMapping);
@@ -139,6 +154,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glDisable(GL_DEPTH_TEST);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _quads[0]);
     glActiveTexture(GL_TEXTURE1);
@@ -481,6 +497,7 @@ void Scene::setupQuad() {
 
     _blurShader->use();
     _blurShader->setInt("image",0);
+
 }
 
 void Scene::setBloom(bool bloom) {
@@ -505,5 +522,19 @@ float Scene::getExposure() {
 
 ToneMapping Scene::getToneMapping() {
     return _toneMapping;
+}
+
+void Scene::setupSkybox() {
+    _skybox.load();
+    _skyboxShader.use();
+    _skyboxShader.setInt("gCubemapTexture",0);
+}
+
+void Scene::setBloomIntensity(float bloomIntensity) {
+    _bloomIntensity = bloomIntensity;
+}
+
+float Scene::getBloomIntensity() {
+    return _bloomIntensity;
 }
 

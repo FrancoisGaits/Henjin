@@ -24,6 +24,10 @@ Shader::Shader(ShaderType type) {
             vertexPath = "../shaders/quad.vs";
             fragmentPath = "../shaders/blur.fs";
             break;
+        case SKYBOX:
+            vertexPath = "../shaders/skybox.vs";
+            fragmentPath = "../shaders/skybox.fs";
+            break;
     }
 
     std::string vertexCode;

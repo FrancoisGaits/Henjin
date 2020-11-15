@@ -24,10 +24,12 @@ public:
     void setBloom(bool bloom);
     void setExposure(float exposure);
     void setToneMapping(ToneMapping tm);
+    void setBloomIntensity(float bloomIntensity);
 
     bool getBloom();
     float getExposure();
     ToneMapping getToneMapping();
+    float getBloomIntensity();
 
 public slots:
     void cleanup();

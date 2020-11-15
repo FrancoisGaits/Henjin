@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     format.setVersion(4, 6);
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setDepthBufferSize(24);
-    format.setSamples(3);
+//    format.setSamples(3);
 //    format.setSwapInterval(0);
     QSurfaceFormat::setDefaultFormat(format);
 
@@ -101,6 +101,15 @@ void MainWindow::on_actionToneMapping_triggered() {
         }
 
         glWidget->setToneMapping(tm);
+    }
+}
+
+void MainWindow::on_actionBloom_Intensity_triggered() {
+    bool ok;
+    double exp = QInputDialog::getDouble(this, "Set Bloom Intensity", "Bloom Intensity", glWidget->getBloomIntensity(),0.01,5.,2,&ok,Qt::WindowFlags(),0.01);
+
+    if(ok) {
+        glWidget->setExposure(static_cast<float>(exp));
     }
 }
 

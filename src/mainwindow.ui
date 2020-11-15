@@ -28,6 +28,7 @@
      <string>Infos</string>
     </property>
     <addaction name="actionOpenGl_Info"/>
+    <addaction name="actionScene_Info"/>
    </widget>
    <widget class="QMenu" name="menuScene">
     <property name="title">
@@ -46,6 +47,7 @@
       <string>Edit Parameters</string>
      </property>
      <addaction name="actionBloom"/>
+     <addaction name="actionBloom_Intensity"/>
      <addaction name="actionExposure"/>
      <addaction name="actionToneMapping"/>
     </widget>
@@ -62,12 +64,12 @@
   </action>
   <action name="actionScene_1">
    <property name="text">
-    <string>Scene 1</string>
+    <string>Base Scene </string>
    </property>
   </action>
   <action name="actionScene_2">
    <property name="text">
-    <string>Scene 2</string>
+    <string>Moving Metaball</string>
    </property>
   </action>
   <action name="actionBloom">
@@ -87,7 +89,17 @@
   </action>
   <action name="actionScene_3">
    <property name="text">
-    <string>Scene 3</string>
+    <string>Bloom Test</string>
+   </property>
+  </action>
+  <action name="actionBloom_Intensity">
+   <property name="text">
+    <string>Bloom Intensity</string>
+   </property>
+  </action>
+  <action name="actionScene_Info">
+   <property name="text">
+    <string>Scene Info</string>
    </property>
   </action>
  </widget>

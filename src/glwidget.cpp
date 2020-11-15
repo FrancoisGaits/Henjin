@@ -174,3 +174,11 @@ float GlWidget::getExposure() {
 bool GlWidget::getBloom() {
     return _scene->getBloom();
 }
+
+void GlWidget::setBloomIntensity(float bloomIntensity) {
+    _scene->setBloomIntensity(bloomIntensity);
+}
+
+float GlWidget::getBloomIntensity() {
+    return _scene->getBloomIntensity();
+}

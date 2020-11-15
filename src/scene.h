@@ -6,6 +6,7 @@
 #include <memory>
 #include <QtGui/QKeyEvent>
 #include <src/Object/renderquad.h>
+#include <src/Object/skybox.h>
 
 #include "src/Object/plane.h"
 #include "src/Object/isosurface.h"
@@ -43,10 +44,12 @@ public:
     void setBloom(bool bloom);
     void setExposure(float exposure);
     void setToneMapping(ToneMapping tm);
+    void setBloomIntensity(float bloomIntensity);
 
     bool getBloom();
     float getExposure();
     ToneMapping getToneMapping();
+    float getBloomIntensity();
 
 
 private:
@@ -63,11 +66,14 @@ private:
 
     Camera _camera;
     Shader _shadowShader = Shader(SHADOW);
+    Shader _skyboxShader = Shader(SKYBOX);
     std::unique_ptr<Shader> _shader;
     std::unique_ptr<Shader> _quadShader;
     std::unique_ptr<Shader> _blurShader;
 
     RenderQuad renderQuad;
+
+    Skybox _skybox;
 
     std::vector<std::unique_ptr<Shape>> _objects;
     std::vector<std::unique_ptr<PointLight>> _pointLights;
@@ -89,7 +95,9 @@ private:
     bool _bloom = false;
     float _exposure = 1;
     ToneMapping _toneMapping = FILMIC_LUMIN;
+    float _bloomIntensity = 0.75f;
 
+    void setupSkybox();
     void setupObjects();
     void setupLights();
     void setupShadows();

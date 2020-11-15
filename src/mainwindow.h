@@ -33,6 +33,7 @@ private slots:
     void on_actionBloom_triggered();
     void on_actionExposure_triggered();
     void on_actionToneMapping_triggered();
+    void on_actionBloom_Intensity_triggered();
 
 };
 

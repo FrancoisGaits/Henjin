@@ -27,6 +27,7 @@ private slots:
     void on_actionOpenGl_Info_triggered();
     void on_actionScene_Info_triggered();
 
+    void on_actionAnim_triggered();
     void on_actionScene_1_triggered();
     void on_actionScene_2_triggered();
     void on_actionScene_3_triggered();

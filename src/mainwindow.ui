@@ -38,6 +38,7 @@
      <property name="title">
       <string>Change Scene</string>
      </property>
+     <addaction name="actionAnim"/>
      <addaction name="actionScene_1"/>
      <addaction name="actionScene_2"/>
      <addaction name="actionScene_3"/>
@@ -100,6 +101,11 @@
   <action name="actionScene_Info">
    <property name="text">
     <string>Scene Info</string>
+   </property>
+  </action>
+  <action name="actionAnim">
+   <property name="text">
+    <string>Anim</string>
    </property>
   </action>
  </widget>

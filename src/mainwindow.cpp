@@ -51,17 +51,23 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::on_actionScene_1_triggered() {
+
+
+void MainWindow::on_actionAnim_triggered() {
     glWidget->changeScene(0);
 }
 
-void MainWindow::on_actionScene_2_triggered() {
+void MainWindow::on_actionScene_1_triggered() {
     glWidget->changeScene(1);
+}
+
+void MainWindow::on_actionScene_2_triggered() {
+    glWidget->changeScene(2);
 }
 
 
 void MainWindow::on_actionScene_3_triggered() {
-    glWidget->changeScene(2);
+    glWidget->changeScene(3);
 }
 
 void MainWindow::on_actionBloom_triggered() {
@@ -137,4 +143,5 @@ void MainWindow::on_actionScene_Info_triggered() {
     message << "Tone Mapping : " << tone << std::endl;
     QMessageBox::information(this, "Scene Informations", message.str().c_str());
 }
+
 

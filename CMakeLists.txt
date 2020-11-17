@@ -39,7 +39,7 @@ add_executable(${PROJECT_NAME} main.cpp
         src/Object/model.h
         src/Light/pointlight.cpp 
         src/Light/pointlight.h 
-    src/Object/shape.cpp src/Object/shape.h src/Object/plane.cpp src/Object/plane.h src/Light/directionallight.cpp src/Light/directionallight.h src/Object/marchingcube.cpp src/Object/marchingcube.h src/Object/isosurface.cpp src/Object/isosurface.h src/Object/metaball.cpp src/Object/metaball.h src/Object/renderquad.cpp src/Object/renderquad.h src/Object/skybox.cpp src/Object/skybox.h src/Object/lodepng.cpp src/Object/lodepng.h)
+    src/Object/shape.cpp src/Object/shape.h src/Object/plane.cpp src/Object/plane.h src/Light/directionallight.cpp src/Light/directionallight.h src/Object/marchingcube.cpp src/Object/marchingcube.h src/Object/isosurface.cpp src/Object/isosurface.h src/Object/metaball.cpp src/Object/metaball.h src/Object/renderquad.cpp src/Object/renderquad.h src/Object/skybox.cpp src/Object/skybox.h src/Object/lodepng.cpp src/Object/lodepng.h src/Animation/cylinder.cpp src/Animation/cylinder.h src/Animation/animatedMesh.cpp src/Animation/animatedMesh.h src/Animation/animatedShape.cpp src/Animation/animatedShape.h)
 
 
 set(EXT_LIBS Qt5::OpenGL ${OPENGL_LIBRARIES})

@@ -1,3 +1,4 @@
+
 #include "scene.h"
 
 Scene::Scene(int width, int height) : _width(width), _height(height) {
@@ -57,6 +58,10 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
             _shadowShader.setMat4fv("model", object->model());
             object->draw();
         }
+        for(const auto &object : _animatedObjects) {
+            _shadowShader.setMat4fv("model", object->model());
+            object->draw();
+        }
 
         ++i;
     }
@@ -107,6 +112,12 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     }
 
     for(const auto &object : _objects) {
+        _shader->setMat4fv("model", object->model());
+        _shader->setVec3("color", object->color());
+        object->draw();
+    }
+
+    for(const auto &object : _animatedObjects) {
         _shader->setMat4fv("model", object->model());
         _shader->setVec3("color", object->color());
         object->draw();
@@ -190,7 +201,13 @@ void Scene::setupObjects() {
 
 
     switch (_sceneNumber) {
-        case 0:
+        case 0: {
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>());
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1), 10));
+            break;
+        }
+
+        case 1:
         {
             MetaBalls mb;
             mb.addMetaBall(glm::vec3(0), 0.9486);
@@ -234,7 +251,7 @@ void Scene::setupObjects() {
             break;
         }
 
-        case 1:
+        case 2:
         {
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10));
             _mb.clear();
@@ -249,7 +266,7 @@ void Scene::setupObjects() {
                                                                glm::vec3{0.1, 0.9, 0.1}));
             break;
         }
-        case 2: {
+        case 3: {
             MetaBalls mb;
             mb.addMetaBall(glm::vec3(0.4,0,0),0.25);
             mb.addMetaBall(glm::vec3(-0.4,0,0),0.25);
@@ -312,16 +329,18 @@ void Scene::setupLights() {
     _pointLights.clear();
 
     switch (_sceneNumber) {
-        case 0 :
+
+        case 1 :
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(4,4,4)));
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
             break;
-        case 1:
+        case 0:
+        case 2:
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
             break;
 
-        case 2:
+        case 3:
             _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3{0,0,0},glm::vec3(10,10,10)));
         default:
             break;
@@ -435,10 +454,10 @@ void Scene::changeScene(unsigned sceneNumber) {
 void Scene::updateScene(float deltaTime, float time) {
 
     switch (_sceneNumber) {
-        case 0:
+        case 1:
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
             break;
-        case 1:
+        case 2:
         {
             float sinTime = std::sin(time / 2.f);
             int sinSign = (sinTime > 0) ? 1 : ((sinTime < 0) ? -1 : 0);

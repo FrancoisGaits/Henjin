@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "src/Object/model.h"
 #include "src/Object/metaball.h"
+#include <src/Animation/cylinder.h>
 
 enum ToneMapping {
     NONE = 0,
@@ -76,6 +77,7 @@ private:
     Skybox _skybox;
 
     std::vector<std::unique_ptr<Shape>> _objects;
+    std::vector<std::unique_ptr<AnimatedShape>> _animatedObjects;
     std::vector<std::unique_ptr<PointLight>> _pointLights;
     std::vector<std::unique_ptr<DirectionalLight>> _directionalLights;
 

@@ -223,7 +223,7 @@ void Scene::setupObjects() {
                                                                glm::vec3{1, 0, 0}));
             _objects.back()->scale(glm::vec3(0.5));
 
-            _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(0.5,0.5,0.5), 1, 500));
+            _objects.emplace_back(std::make_unique<Model>("aya.obj", glm::vec3(0, -0.5, 0), glm::vec3(0.5,0.5,0.5), 1, 500));
 
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.1, 0.1, 0.1), 10));
 

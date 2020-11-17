@@ -30,6 +30,7 @@ void GlWidget::initializeGL() {
     makeCurrent();
     _scene = std::make_unique<Scene>(sizeHint().width(), sizeHint().height());
     doneCurrent();
+    _sceneExposure = _scene->getExposure();
 }
 
 void GlWidget::paintGL() {

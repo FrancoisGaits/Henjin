@@ -2,17 +2,17 @@
 #include <glm/gtx/string_cast.hpp>
 #include "metaball.h"
 
-MetaBall::MetaBall(glm::vec3 center, float radius, Type type) : _center{center}, _orig{center}, _radius{radius}, _type{type} {
+MetaBall::MetaBall(glm::vec3 center, float radius, ContribType Ctype, ShapeType Stype) : _center{center}, _orig{center}, _radius{radius}, _Ctype{Ctype}, _Stype{Stype} {
 
 }
 
 float MetaBall::f(glm::vec3 pos) const {
-    float d = glm::dot(_center - pos,_center - pos);
+    float d = glm::dot(glm::pow(_center - pos,glm::vec3(static_cast<float>(_Stype))),glm::pow(_center - pos,glm::vec3(static_cast<float>(_Stype))));
 
     if(d>_threshold || d == 0.f)
         return 0;
 
-    return (std::pow(_radius,2.f)/d)* static_cast<float>(_type);
+    return (std::pow(_radius,2.f)/d)* static_cast<float>(_Ctype);
 }
 
 void MetaBall::move(glm::vec3 pos, float intensity, int moveType) {
@@ -38,8 +38,8 @@ float MetaBalls::operator()(glm::vec3 pos) {
     return sum;
 }
 
-void MetaBalls::addMetaBall(glm::vec3 center, float radius, Type type) {
-    addMetaBall(MetaBall(center, radius, type));
+void MetaBalls::addMetaBall(glm::vec3 center, float radius, ContribType Ctype, ShapeType Stype) {
+    addMetaBall(MetaBall(center, radius, Ctype, Stype));
 }
 
 void MetaBalls::addMetaBall(MetaBall mb) {

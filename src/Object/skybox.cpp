@@ -4,7 +4,6 @@
 
 Skybox::Skybox() {
     float vertices[] = {
-            // positions
             -1.0f,  1.0f, -1.0f,
             -1.0f, -1.0f, -1.0f,
             1.0f, -1.0f, -1.0f,
@@ -80,6 +79,33 @@ void Skybox::load() {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glFinish();
+    }
+    GLenum error = glGetError();
+    while(error != GL_NO_ERROR)
+    {
+        switch(error){
+            case(GL_INVALID_ENUM):
+                std::cout << ": GL_INVALID_ENUM";
+                break;
+            case(GL_INVALID_VALUE):
+                std::cout << ": GL_INVALID_VALUE";
+                break;
+            case(GL_INVALID_OPERATION):
+                std::cout << ": GL_INVALID_OPERATION";
+                break;
+            case(GL_INVALID_FRAMEBUFFER_OPERATION):
+                std::cout << ": GL_INVALID_FRAMEBUFFER_OPERATION";
+                break;
+            case(GL_OUT_OF_MEMORY):
+                std::cout << ": GL_OUT_OF_MEMORY";
+                break;
+            default:
+                std::cout << ": Unknown error!";
+
+        }
+        error = glGetError();
 
     }
 

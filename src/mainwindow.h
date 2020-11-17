@@ -25,6 +25,7 @@ private:
 private slots:
     void resizeEvent(QResizeEvent* event) override;
     void on_actionOpenGl_Info_triggered();
+    void on_actionScene_Info_triggered();
 
     void on_actionScene_1_triggered();
     void on_actionScene_2_triggered();

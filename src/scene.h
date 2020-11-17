@@ -93,8 +93,8 @@ private:
 
 
     bool _bloom = false;
-    float _exposure = 1;
-    ToneMapping _toneMapping = FILMIC_LUMIN;
+    float _exposure = 2;
+    ToneMapping _toneMapping = FILMIC;
     float _bloomIntensity = 0.75f;
 
     void setupSkybox();

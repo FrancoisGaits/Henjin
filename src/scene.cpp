@@ -18,6 +18,7 @@ Scene::Scene(int width, int height) : _width(width), _height(height) {
     setupQuad();
     setupShadows();
 
+    glFinish();
 }
 
 void Scene::resize(int width, int height) {
@@ -32,7 +33,7 @@ void Scene::resize(int width, int height) {
 
 void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     glEnable(GL_DEPTH_TEST);
-    glClearColor(.0f,.0f,.0f,1.0f);
+//    glClearColor(1.f,1.0f,1.0f,1.0f);
 
     updateScene(deltaTime, time);
     _camera.update(deltaTime);
@@ -111,18 +112,8 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         object->draw();
     }
 
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    //skybox
-    glDepthFunc(GL_LEQUAL);
-    _skyboxShader.use();
-    _skyboxShader.setMat4fv("view", glm::mat4(glm::mat3(_view)));
-    _skyboxShader.setMat4fv("projection", _projection);
-
-    _skybox.bind(GL_TEXTURE0);
-    _skybox.draw();
-    glDepthFunc(GL_LESS);
 
 
     bool horizontal = true;
@@ -145,6 +136,18 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         }
     }
 
+
+
+    //skybox
+    glDepthFunc(GL_LEQUAL);
+    glBindFramebuffer(GL_FRAMEBUFFER, _quadFBO);
+    _skyboxShader.use();
+    _skyboxShader.setMat4fv("view", glm::mat4(glm::mat3(_view)));
+    _skyboxShader.setMat4fv("projection", _projection);
+
+    _skybox.bind(GL_TEXTURE0);
+    _skybox.draw();
+    glDepthFunc(GL_LESS);
 
 
     _quadShader->use();
@@ -206,21 +209,34 @@ void Scene::setupObjects() {
             mb2.addMetaBall(glm::vec3(0.4, -0.4, -0.4), 0.1);
             mb2.addMetaBall(glm::vec3(-0.4, -0.4, 0.4), 0.1);
 
+            MetaBalls mb3;
+            mb3.addMetaBall(glm::vec3(0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(-0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(-0.4, 0.4, 0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(0.4, -0.4, 0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(0.4, 0.4, -0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(-0.4, 0.4, -0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(0.4, -0.4, -0.4), 0.08, POSITIVE, CUBE);
+            mb3.addMetaBall(glm::vec3(-0.4, -0.4, 0.4), 0.08, POSITIVE, CUBE);
+
             _objects.emplace_back(std::make_unique<IsoSurface>(mb, glm::vec3(-5, -5, -5), 0.1, glm::vec3{1, 2.2, 1},
                                                                glm::vec3{1, 0, 0}));
             _objects.back()->scale(glm::vec3(0.5));
 
             _objects.emplace_back(std::make_unique<Model>("aya3.obj", glm::vec3(0, -0.5, 0), glm::vec3(1,1,1), 1, 500));
 
-            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.1, 0.1, 0.1), 10000));
-            _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1, -1, -1), 0.03, glm::vec3{-1, 1, -1},
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(0.1, 0.1, 0.1), 10));
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb3, glm::vec3(-1,-1,-1),0.03,glm::vec3{-4,1,1},glm::vec3(0.2,0.8,0.4)));
+
+            _objects.emplace_back(std::make_unique<IsoSurface>(mb2, glm::vec3(-1, -1, -1), 0.03, glm::vec3{-2, 1, -1},
                                                                glm::vec3{1, 0, 0.5}));
             break;
         }
 
         case 1:
         {
-            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10000));
+            _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1, 1, 1), 10));
             _mb.clear();
 
             _mb.addMetaBall(glm::vec3(0.25), 0.1);
@@ -420,7 +436,7 @@ void Scene::updateScene(float deltaTime, float time) {
 
     switch (_sceneNumber) {
         case 0:
-            _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
+//            _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
             break;
         case 1:
         {

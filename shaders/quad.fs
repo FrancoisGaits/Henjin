@@ -29,18 +29,11 @@ vec3 changeLuminance(vec3 c_in, float l_out){
 vec3 tonemapFilmic_lumin(const vec3 color) {
     float lum = luminance(color);
     float x = max(0.0, lum - 0.004);
-    return changeLuminance(color,(x * (6.2 * x + 0.5)) / (x * (6.2 * x + 1.7) + 0.06));
+    return clamp(changeLuminance(color,(x * (6.2 * x + 0.5)) / (x * (6.2 * x + 1.7) + 0.06)),0,1);
 }
 
 void main() {
     vec3 hdr = texture(hdrBuffer, TexCoords).rgb;
-    //    vec3 mapped = tonemapFilmic_lumin(hdr);
-
-    if(bloom) {
-        vec3 bloom_color = texture(bloomBuffer, TexCoords).rgb;
-
-        hdr += bloom_color;
-    }
 
     vec3 mapped;
     switch(toneMapping){
@@ -58,6 +51,15 @@ void main() {
             mapped = hdr;
             break;
     }
+
+    if(bloom) {
+        vec3 bloom_color = texture(bloomBuffer, TexCoords).rgb;
+
+        mapped += bloom_color;
+    }
+
+
+
 
     mapped = pow(mapped, vec3(1.f/2.2));
     color = vec4(mapped, 1);

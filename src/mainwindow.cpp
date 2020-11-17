@@ -106,10 +106,35 @@ void MainWindow::on_actionToneMapping_triggered() {
 
 void MainWindow::on_actionBloom_Intensity_triggered() {
     bool ok;
-    double exp = QInputDialog::getDouble(this, "Set Bloom Intensity", "Bloom Intensity", glWidget->getBloomIntensity(),0.01,5.,2,&ok,Qt::WindowFlags(),0.01);
+    double bloomIntensity = QInputDialog::getDouble(this, "Set Bloom Intensity", "Bloom Intensity", glWidget->getBloomIntensity(),0.01,5.,2,&ok,Qt::WindowFlags(),0.01);
 
     if(ok) {
-        glWidget->setExposure(static_cast<float>(exp));
+        glWidget->setBloomIntensity(static_cast<float>(bloomIntensity));
     }
+}
+
+void MainWindow::on_actionScene_Info_triggered() {
+    std::string tone;
+    switch(glWidget->getToneMapping()) {
+        case NONE :
+            tone = "None";
+            break;
+        case FILMIC:
+            tone = "Filmic";
+            break;
+        case FILMIC_LUMIN:
+            tone = "Filmic Luminance Only";
+            break;
+        case REINHARD:
+            tone = "Reinhard";
+            break;
+    }
+
+    std::stringstream message;
+    message << "Bloom : " << (glWidget->getBloom() ? "On" : "Off") << std::endl;
+    message << "Bloom Intensity : " << glWidget->getBloomIntensity() << std::endl;
+    message << "Exposure : " << glWidget->getExposure() << std::endl;
+    message << "Tone Mapping : " << tone << std::endl;
+    QMessageBox::information(this, "Scene Informations", message.str().c_str());
 }
 

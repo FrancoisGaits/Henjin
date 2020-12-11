@@ -70,9 +70,9 @@ void Mesh::load() {
     glBindVertexArray(0);
 }
 
-void Mesh::draw() const {
+void Mesh::draw(GLenum mode) const {
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 

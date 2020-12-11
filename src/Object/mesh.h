@@ -31,11 +31,10 @@ public:
     unsigned nbTriangles() const;
     unsigned nbVertices() const;
     unsigned nbNormals() const;
-    float volume() const;
 
     void load();
 
-    void draw() const;
+    void draw(GLenum mode=GL_TRIANGLES) const;;
 
     void clear();
 

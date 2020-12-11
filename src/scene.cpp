@@ -118,6 +118,11 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
     }
 
     for(const auto &object : _animatedObjects) {
+        for(const auto &bone : object->bones()) {
+            _shader->setMat4fv("model", bone->model());
+            _shader->setVec3("color", bone->color());
+            bone->draw();
+        }
         _shader->setMat4fv("model", object->model());
         _shader->setVec3("color", object->color());
         object->draw();
@@ -195,6 +200,7 @@ void Scene::resetCamera() {
 
 void Scene::setupObjects() {
     _objects.clear();
+    _animatedObjects.clear();
 
 //    ImplicitFunction funcCercle = [](glm::vec3 pos){return (pos.x * pos.x + pos.y * pos.y + pos.z * pos.z) - 0.5f;};
 //    ImplicitFunction func = [](glm::vec3 pos){return (3 * pos.x * pos.x - pos.y * pos.y) + (3 * pos.z * pos.z) - 1.f;};
@@ -202,8 +208,20 @@ void Scene::setupObjects() {
 
     switch (_sceneNumber) {
         case 0: {
-            _animatedObjects.emplace_back(std::make_unique<Cylinder>());
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 2.f));
+            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1});
+            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+            _animatedObjects.back()->registerBones();
+
+
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-1,0.5,1), 2.f));
+            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1},1,glm::vec3{0,180,0});
+            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+            _animatedObjects.back()->registerBones();
+
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1), 10));
+
+//            _animatedObjects.back()->rotate(glm::vec3(0,90,0));
             break;
         }
 
@@ -453,7 +471,17 @@ void Scene::changeScene(unsigned sceneNumber) {
 
 void Scene::updateScene(float deltaTime, float time) {
 
+    float sinTime = std::sin(time);
+    int sinSign = sinTime>0 ? 1 : -1;
+
     switch (_sceneNumber) {
+        case 0:
+            _animatedObjects[0]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
+            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
+
+            _animatedObjects[1]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
+            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
+            break;
         case 1:
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
             break;
@@ -472,6 +500,11 @@ void Scene::updateScene(float deltaTime, float time) {
         }
         default:
             break;
+    }
+
+
+    for(auto & object : _animatedObjects) {
+        object->update();
     }
 }
 

@@ -16,7 +16,8 @@
 #include "camera.h"
 #include "src/Object/model.h"
 #include "src/Object/metaball.h"
-#include <src/Animation/cylinder.h>
+#include "src/Animation/cylinder.h"
+#include "src/Animation/bone.h"
 
 enum ToneMapping {
     NONE = 0,

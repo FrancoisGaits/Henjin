@@ -15,18 +15,17 @@
 #endif
 
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
-enum Elem {
-    VERTEX,
-    NORMAL,
-    FACE
-};
+#include "bone.h"
 
 class AnimatedMesh {
 public:
     std::vector<GLfloat> vertices;
     std::vector<GLfloat> normals;
     std::vector<GLuint> indices;
+
 
     void addQuad(unsigned a, unsigned b, unsigned c, unsigned d);
     void addTri(unsigned a, unsigned b, unsigned c);
@@ -38,13 +37,13 @@ public:
     unsigned nbTriangles() const;
     unsigned nbVertices() const;
     unsigned nbNormals() const;
-    float volume() const;
 
-    void update();
+    void update(glm::mat4 meshModel);
+    void submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel);
 
     void load();
 
-    void draw() const;
+    void draw(GLenum mode=GL_TRIANGLES) const;
 
     void clear();
 
@@ -56,6 +55,7 @@ private :
     GLuint _nbo;
     GLuint _ebo;
 
+    std::unordered_map<std::shared_ptr<Bone>,std::vector<float>> _bonesNweights;
 };
 
 

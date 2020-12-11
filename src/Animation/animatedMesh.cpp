@@ -1,3 +1,5 @@
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 #include "animatedMesh.h"
 
 void AnimatedMesh::addQuad(unsigned a, unsigned b, unsigned c, unsigned d) {
@@ -70,9 +72,9 @@ void AnimatedMesh::load() {
     glBindVertexArray(0);
 }
 
-void AnimatedMesh::draw() const {
+void AnimatedMesh::draw(GLenum mode) const {
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
@@ -93,14 +95,92 @@ void AnimatedMesh::addNormal(glm::vec3 &n) {
     addNormal(n.x,n.y,n.z);
 }
 
-void AnimatedMesh::update() {
+void AnimatedMesh::update(glm::mat4 meshModel) {
+
+    std::vector<GLfloat> newVertices;
+    std::vector<GLfloat> newNormals;
+
+    for(unsigned i=0; i < vertices.size(); i+=3) {
+        glm::vec4 vertex{vertices[i],vertices[i+1],vertices[i+2],1};
+        glm::vec4 normal{normals[i],normals[i+1],normals[i+2],1};
+        glm::mat4 accV{0};
+        glm::mat4 accN{0};
+
+        for (const auto &p : _bonesNweights) {
+            accV += p.second[i/3] * p.first->getTransform();
+            accN += p.second[i/3] * glm::inverse(glm::transpose(p.first->getTransform()));
+        }
+        glm::vec4 newVertex = accV*meshModel*vertex;
+        glm::vec4 newNormal = accN*glm::inverse(glm::transpose(meshModel))*normal;
+
+        newVertices.emplace_back(newVertex.x);
+        newVertices.emplace_back(newVertex.y);
+        newVertices.emplace_back(newVertex.z);
+
+        newNormals.emplace_back(newNormal.x);
+        newNormals.emplace_back(newNormal.y);
+        newNormals.emplace_back(newNormal.z);
+
+
+//        newVertices.emplace_back(newVertex.x/newVertex.w);
+//        newVertices.emplace_back(newVertex.y/newVertex.w);
+//        newVertices.emplace_back(newVertex.z/newVertex.w);
+//
+
+    }
+
     glBindVertexArray(_vao);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(GLfloat), vertices.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, newVertices.size() * sizeof(GLfloat), newVertices.data());
 
     glBindBuffer(GL_ARRAY_BUFFER, _nbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(GLfloat), normals.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, newNormals.size() * sizeof(GLfloat), newNormals.data());
 
     glBindVertexArray(0);
+}
+
+void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel) {
+    std::cout << glm::to_string(objectModel) << std::endl;
+
+    for (unsigned i = 0; i < vertices.size(); i += 3) {
+        glm::vec4 v{vertices[i],vertices[i+1],vertices[i+2],1};
+        glm::vec3 vert = objectModel*v;
+        float sum = 0.f;
+        std::vector<float> w;
+
+        for(const auto & bone : bones) {
+            float dist = 1.f/std::pow(bone->getDistanceFrom(vert),5.f);
+
+            w.emplace_back(dist);
+            sum += dist;
+        }
+
+        unsigned j = 0;
+        for(const auto & bone : bones) {
+            _bonesNweights[bone].emplace_back(w[j++]/sum);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    for(const auto & bone : bones) {
+//        for(const auto & w : _bonesNweights[bone]) {
+//            std::cout << w << "  |  ";
+//        }
+//        std::cout << std::endl;
+//    }
+
+
 }
 

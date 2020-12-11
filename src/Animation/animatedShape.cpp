@@ -10,7 +10,7 @@ const glm::vec3 &AnimatedShape::color() const {
 }
 
 const glm::mat4 &AnimatedShape::model() const {
-    return _model;
+    return _id;//_model;
 }
 
 void AnimatedShape::translate(glm::vec3 vec) {
@@ -49,4 +49,8 @@ void AnimatedShape::scaleY(float scale) {
 
 void AnimatedShape::scaleZ(float scale) {
     _model = glm::scale(_model, glm::vec3(1,1,scale));
+}
+
+void AnimatedShape::registerBones() {
+    _mesh.submitBones(bones(),_model);
 }

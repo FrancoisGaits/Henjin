@@ -113,6 +113,8 @@ void Skybox::load() {
 
 void Skybox::bind(GLenum textureUnit) {
     glActiveTexture(textureUnit);
+    if(_texture!=1)
+        std::cout << _texture << std::endl;
     glBindTexture(GL_TEXTURE_CUBE_MAP, _texture);
 }
 

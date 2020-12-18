@@ -211,13 +211,14 @@ void Scene::setupObjects() {
             _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 2.f));
             _animatedObjects.back()->addBone(glm::vec3{0,0.5,1});
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+            _animatedObjects.back()->rotateBone(1,glm::vec3{0,0,90});
             _animatedObjects.back()->registerBones();
 
 
-            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-1,0.5,1), 2.f));
-            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1},1,glm::vec3{0,180,0});
-            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
-            _animatedObjects.back()->registerBones();
+//            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-1,0.5,1), 2.f));
+//            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1},1,glm::vec3{0,180,0});
+//            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+//            _animatedObjects.back()->registerBones();
 
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1), 10));
 
@@ -477,10 +478,10 @@ void Scene::updateScene(float deltaTime, float time) {
     switch (_sceneNumber) {
         case 0:
             _animatedObjects[0]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
-            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
-
-            _animatedObjects[1]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
-            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
+            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,-90*deltaTime*sinSign));
+//
+//            _animatedObjects[1]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
+//            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
             break;
         case 1:
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));

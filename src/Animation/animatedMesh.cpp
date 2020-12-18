@@ -149,7 +149,7 @@ void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, 
         std::vector<float> w;
 
         for(const auto & bone : bones) {
-            float dist = 1.f/std::pow(bone->getDistanceFrom(vert),5.f);
+            float dist = 1.f/std::pow(bone->getDistanceFrom(vert),4.f);
 
             w.emplace_back(dist);
             sum += dist;

@@ -35,7 +35,7 @@ void main(){
 
         gl_Position = projection * view * accV * model * vec4(position, 1.0f);
         normal = normalize(transpose(inverse(accV * model)) * vec4(inormal,0)).xyz;
-
+        fragColor = weights.xyz;
     } else {
         gl_Position =  projection * view *  model * vec4(position, 1.0f);
         normal = normalize(transpose(inverse(model)) * vec4(inormal,0)).xyz;

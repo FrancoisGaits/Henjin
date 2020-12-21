@@ -2,14 +2,13 @@
 #include <glm/gtx/string_cast.hpp>
 #include "bone.h"
 
-Bone::Bone(unsigned Id, glm::vec3 position, float length, glm::vec3 rotation, glm::mat4 parentTranslation,
-           glm::mat4 parentRotation) : _id{Id}, _color{glm::vec3{0}} {
+Bone::Bone(unsigned Id, glm::vec3 position, float length, glm::vec3 rotation, glm::mat4 parentModel) : _id{Id}, _color{glm::vec3{0}} {
 
     _lenght = length;
-    _translation = glm::translate(glm::mat4{1},position);
-    _rotation = glm::mat4{1};
-    _parentRotation = parentRotation;
-    _parentTranslation = parentTranslation;
+    glm::mat4 translation = glm::translate(glm::mat4{1},position);
+    _model = translation;
+
+    _parentModel = parentModel;
 
     rotate(rotation);
     _inverseInitModel = glm::inverse(model());
@@ -56,7 +55,7 @@ const glm::mat4 &Bone::model() const {
 }
 
 void Bone::translate(glm::vec3 vec) {
-    _translation = glm::translate(_translation, vec);
+    _model = glm::translate(_model, vec);
 }
 
 void Bone::rotate(glm::vec3 rot) {
@@ -66,49 +65,48 @@ void Bone::rotate(glm::vec3 rot) {
 }
 
 void Bone::rotateX(float angle) {
-    _rotation = glm::rotate(_rotation,glm::radians(angle),glm::vec3(1,0,0));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(1,0,0));
 
     updateModel();
 }
 
 void Bone::rotateY(float angle) {
-    _rotation = glm::rotate(_rotation,glm::radians(angle),glm::vec3(0,1,0));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(0,1,0));
 
     updateModel();
 }
 
 void Bone::rotateZ(float angle) {
-    _rotation = glm::rotate(_rotation,glm::radians(angle),glm::vec3(0,0,1));
+    _model = glm::rotate(_model,glm::radians(angle),glm::vec3(0,0,1));
 
     updateModel();
 }
 
 void Bone::registerChild(const std::shared_ptr<Bone>& bone) {
     _children.emplace_back(bone);
-    bone->setParentTransform(_translation*_parentTranslation,_rotation*_parentTranslation);
+    bone->setParentTransform(_totalModel);
 }
 
-void Bone::setParentTransform(glm::mat4 translation, glm::mat4 rotation) {
-    _parentTranslation = translation;
-    _parentRotation = rotation;
+void Bone::setParentTransform(glm::mat4 model) {
+    _parentModel = model;
 
     updateModel();
 }
 
 void Bone::updateModel() {
-    _totalModel = _parentTranslation*_parentRotation*_translation*_rotation;
+    _totalModel = _parentModel*_model;
     for(auto & child : _children) {
-        child->setParentTransform(_translation*_parentTranslation,_rotation*_parentTranslation);
+        child->setParentTransform(_totalModel);
     }
 }
-
-const glm::mat4 &Bone::translation() const{
-    return _translation;
-}
-
-const glm::mat4 &Bone::rotation() const{
-    return _rotation;
-}
+//
+//const glm::mat4 &Bone::translation() const{
+//    return _translation;
+//}
+//
+//const glm::mat4 &Bone::rotation() const{
+//    return _rotation;
+//}
 
 float Bone::getDistanceFrom(glm::vec3 point) {
     glm::vec3 ab = origEnd() - origStart();
@@ -132,27 +130,3 @@ float Bone::getDistanceFrom(glm::vec3 point) {
 const unsigned Bone::id() const {
     return _id;
 }
-
-//float Bone::getDistanceFrom(glm::vec3 point) {
-//    float lengthSq = std::pow(_lenght,2.f);
-//    float t = ((point.x - origStart().x) * (origEnd().x - origStart().x) + (point.y - origStart().y) * (origEnd().y - origStart().y) + (point.z - origStart().z) * (origEnd().z - origStart().z)) / lengthSq;
-//
-//    t = std::max(1.f,std::min(0.f,t));
-//
-//    glm::vec3 proj{origStart() + t*(origEnd()-origStart())};
-//
-////    if(point.z==0) {
-////        std::cout << "DIST : " << glm::to_string(point) << " and " << glm::to_string(origStart()) << " | "
-////                  << glm::to_string(origEnd()) << " = " << glm::distance(point, proj) << std::endl;
-////    }
-//    return glm::distance(point,proj);
-//}
-////
-////float dist_to_segment_squared(float px, float py, float pz, float lx1, float ly1, float lz1, float lx2, float ly2, float lz2) {
-////    float line_dist = dist_sq(lx1, ly1, lz1, lx2, ly2, lz2);
-////    if (line_dist == 0) return dist_sq(px, py, pz, lx1, ly1, lz1);
-////    float t = ((px - lx1) * (lx2 - lx1) + (py - ly1) * (ly2 - ly1) + (pz - lz1) * (lz2 - lz1)) / line_dist;
-////    t = constrain(t, 0, 1);
-////    return dist_sq(px, py, pz, lx1 + t * (lx2 - lx1), ly1 + t * (ly2 - ly1), lz1 + t * (lz2 - lz1));
-////}
-

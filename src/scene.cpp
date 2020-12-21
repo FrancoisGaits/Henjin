@@ -220,17 +220,19 @@ void Scene::setupObjects() {
 
     switch (_sceneNumber) {
         case 0: {
-            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 2.f));
-            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1});
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 4.f));
+            _animatedObjects.back()->addBone(glm::vec3{-1,0.5,1});
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
-            _animatedObjects.back()->rotateBone(1,glm::vec3{0,0,0});
+            _animatedObjects.back()->addChildBone(1,glm::vec3{1,0,0});
+            _animatedObjects.back()->addChildBone(2,glm::vec3{1,0,0});
             _animatedObjects.back()->registerBones();
 
 
-//            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-1,0.5,1), 2.f));
-//            _animatedObjects.back()->addBone(glm::vec3{0,0.5,1},1,glm::vec3{0,180,0});
-//            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
-//            _animatedObjects.back()->registerBones();
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(3,0.5,2), 3.f));
+            _animatedObjects.back()->addBone(glm::vec3{1.5,0.5,2},1,glm::vec3{0,0,0});
+            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+            _animatedObjects.back()->addChildBone(1,glm::vec3{1,0,0});
+            _animatedObjects.back()->registerBones();
 
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1), 10));
 
@@ -366,13 +368,17 @@ void Scene::setupLights() {
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(-1,5,1),glm::vec3(1,1,1)));
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(0,5,-3),glm::vec3(1,1,1)));
             break;
-        case 0:
+
         case 2:
             _directionalLights.emplace_back(std::make_unique<DirectionalLight>(glm::vec3(1,5,1),glm::vec3(1,1,1)));
+            break;
+        case 0:
+            _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3{0,2,0},glm::vec3(1,1,1)));
             break;
 
         case 3:
             _pointLights.emplace_back(std::make_unique<PointLight>(glm::vec3{0,0,0},glm::vec3(10,10,10)));
+            break;
         default:
             break;
     }
@@ -491,8 +497,12 @@ void Scene::updateScene(float deltaTime, float time) {
         case 0:
             _animatedObjects[0]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
             _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
-//            _animatedObjects[1]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
-//            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
+            _animatedObjects[0]->rotateBone(2,glm::vec3(0,0,-25*deltaTime*sinSign));
+            _animatedObjects[0]->rotateBone(3,glm::vec3(0,-25*deltaTime*sinSign,0));
+
+            _animatedObjects[1]->rotateBone(0,glm::vec3(0,0,40*deltaTime*sinSign));
+            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,-40*deltaTime*sinSign));
+            _animatedObjects[1]->rotateBone(2,glm::vec3(0,0,40*deltaTime*sinSign));
             break;
         case 1:
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));

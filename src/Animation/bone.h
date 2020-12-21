@@ -9,14 +9,14 @@
 
 class Bone  {
 public:
-    explicit Bone(unsigned Id, glm::vec3 position, float length=1.f, glm::vec3 rotation=glm::vec3{0}, glm::mat4 parentTranslation=glm::mat4{1}, glm::mat4 parentRotation = glm::mat4{1});
+    explicit Bone(unsigned Id, glm::vec3 position, float length=1.f, glm::vec3 rotation=glm::vec3{0}, glm::mat4 parentModel = glm::mat4{1});
 
     void draw() const;
 
     const glm::vec3 &color() const;
     const glm::mat4 &model() const;
-    const glm::mat4 &translation() const;
-    const glm::mat4 &rotation() const;
+//    const glm::mat4 &translation() const;
+//    const glm::mat4 &rotation() const;
 
     void translate(glm::vec3 vec);
 
@@ -32,7 +32,7 @@ public:
     const unsigned id() const;
 
     void registerChild(const std::shared_ptr<Bone>& bone);
-    void setParentTransform(glm::mat4 translation, glm::mat4 rotation);
+    void setParentTransform(glm::mat4 model);
 
     float getDistanceFrom(glm::vec3 point);
 
@@ -47,16 +47,14 @@ private:
     glm::vec3 _origStart;
     glm::vec3 _origEnd;
 
-    glm::mat4 _translation;
-    glm::mat4 _rotation;
+    glm::mat4 _model;
 
     Mesh _mesh;
 
     glm::vec3 _color;
 
 
-    glm::mat4 _parentTranslation;
-    glm::mat4 _parentRotation;
+    glm::mat4 _parentModel;
     std::vector<std::shared_ptr<Bone>> _children;
 
     void updateModel();

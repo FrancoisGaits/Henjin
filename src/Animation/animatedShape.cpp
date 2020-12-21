@@ -10,7 +10,7 @@ const glm::vec3 &AnimatedShape::color() const {
 }
 
 const glm::mat4 &AnimatedShape::model() const {
-    return _id;//_model;
+    return _model;
 }
 
 void AnimatedShape::translate(glm::vec3 vec) {

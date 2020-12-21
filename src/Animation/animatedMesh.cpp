@@ -53,6 +53,8 @@ void AnimatedMesh::load() {
     glGenBuffers(1, &_vbo);
     glGenBuffers(1, &_nbo);
     glGenBuffers(1, &_ebo);
+    glGenBuffers(1, &_bbo);
+    glGenBuffers(1, &_wbo);
     glGenVertexArrays(1, &_vao);
 
     glBindVertexArray(_vao);
@@ -88,6 +90,8 @@ AnimatedMesh::~AnimatedMesh() {
     glDeleteBuffers(1, &_vbo);
     glDeleteBuffers(1, &_nbo);
     glDeleteBuffers(1, &_ebo);
+    glDeleteBuffers(1, &_bbo);
+    glDeleteBuffers(1, &_wbo);
     glDeleteVertexArrays(1, &_vao);
 }
 
@@ -103,13 +107,18 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
     for(unsigned i=0; i < vertices.size(); i+=3) {
         glm::vec4 vertex{vertices[i],vertices[i+1],vertices[i+2],1};
         glm::vec4 normal{normals[i],normals[i+1],normals[i+2],1};
+        unsigned vertId = i/3;
         glm::mat4 accV{0};
         glm::mat4 accN{0};
 
-        for (const auto &p : _bonesNweights) {
-            accV += p.second[i/3] * p.first->getTransform();
-            accN += p.second[i/3] * glm::inverse(glm::transpose(p.first->getTransform()));
+        glm::ivec4 bonesId = glm::ivec4(_bonesIDs[vertId*4],_bonesIDs[vertId*4+1],_bonesIDs[vertId*4+2],_bonesIDs[vertId*4+3]);
+        glm::vec4 weights = glm::vec4(_bonesWeights[vertId*4],_bonesWeights[vertId*4+1],_bonesWeights[vertId*4+2],_bonesWeights[vertId*4+3]);
+
+        for(unsigned j=0; j<4 && bonesId[j] != -1; ++j) {
+            accV += weights[j] * _bones[bonesId[j]]->getTransform();
+            accN += weights[j] * glm::inverse(glm::transpose(_bones[bonesId[j]]->getTransform()));
         }
+
         glm::vec4 newVertex = accV*meshModel*vertex;
         glm::vec4 newNormal = accN*glm::inverse(glm::transpose(meshModel))*normal;
 
@@ -140,47 +149,76 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
 }
 
 void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel) {
-    std::cout << glm::to_string(objectModel) << std::endl;
+    _bones = bones;
 
     for (unsigned i = 0; i < vertices.size(); i += 3) {
         glm::vec4 v{vertices[i],vertices[i+1],vertices[i+2],1};
         glm::vec3 vert = objectModel*v;
-        float sum = 0.f;
-        std::vector<float> w;
+        glm::vec4 weights;
+        glm::ivec4 boneIds{-1};
+
+        float minVal = MAXFLOAT;
+        unsigned minInd = 0;
+
+        unsigned nbWeights = 0;
 
         for(const auto & bone : bones) {
             float dist = 1.f/std::pow(bone->getDistanceFrom(vert),4.f);
 
-            w.emplace_back(dist);
-            sum += dist;
+            if(nbWeights < 4) {
+                weights[nbWeights] = dist;
+                boneIds[nbWeights] = bone->id();
+                ++nbWeights;
+
+                if(dist < minVal) {
+                    minVal = dist;
+                    minInd = nbWeights;
+                }
+
+            } else if(dist > minVal) {
+                weights[minInd] = dist;
+                boneIds[minInd] = bone->id();
+
+                minVal = weights[0];
+                minInd = 0;
+                for(unsigned j=1; j<4; ++j) {
+                    if(weights[j] < minVal) {
+                        minVal = weights[j];
+                        minInd = j;
+                    }
+                }
+
+            }
         }
 
-        unsigned j = 0;
-        for(const auto & bone : bones) {
-            _bonesNweights[bone].emplace_back(w[j++]/sum);
-        }
+        float sum = weights.x + weights.y + weights.z + weights.w;
+        weights /= sum;
+
+//        std::cout << "---- New vertex ----" << std::endl;
+//        std::cout << glm::to_string(weights) << std::endl;
+//        std::cout << glm::to_string(boneIds) << std::endl;
+
+        _bonesWeights.emplace_back(weights.x);
+        _bonesWeights.emplace_back(weights.y);
+        _bonesWeights.emplace_back(weights.z);
+        _bonesWeights.emplace_back(weights.w);
+        _bonesIDs.emplace_back(boneIds.x);
+        _bonesIDs.emplace_back(boneIds.y);
+        _bonesIDs.emplace_back(boneIds.z);
+        _bonesIDs.emplace_back(boneIds.w);
     }
 
+    glBindVertexArray(_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, _bbo);
+    glBufferData(GL_ARRAY_BUFFER, _bonesIDs.size() * sizeof(GLint), _bonesIDs.data(), GL_STATIC_DRAW);
+    glVertexAttribIPointer(2, 4, GL_INT, 4 * sizeof(GLint), (GLvoid *) 0);
+    glEnableVertexAttribArray(2);
 
+    glBindBuffer(GL_ARRAY_BUFFER, _wbo);
+    glBufferData(GL_ARRAY_BUFFER, _bonesWeights.size() * sizeof(GLfloat), _bonesWeights.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid *) 0);
+    glEnableVertexAttribArray(3);
 
-
-
-
-
-
-
-
-
-
-
-
-//    for(const auto & bone : bones) {
-//        for(const auto & w : _bonesNweights[bone]) {
-//            std::cout << w << "  |  ";
-//        }
-//        std::cout << std::endl;
-//    }
-
-
+    glBindVertexArray(0);
 }
 

@@ -50,7 +50,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
 
         _shadowShader.use();
         _shadowShader.setMat4fv("lightSpaceMatrix", lightSpaceMatrix);
-
+        _shadowShader.setBool("animGPU", false);
 
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -58,8 +58,15 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
             _shadowShader.setMat4fv("model", object->model());
             object->draw();
         }
+
+        _shadowShader.setBool("animGPU", _animGPU);
         for(const auto &object : _animatedObjects) {
-            _shadowShader.setMat4fv("model", object->model());
+            if(_animGPU) {
+                for (const auto &bone : object->bones()) {
+                    _shadowShader.setMat4fv("bones[" + std::to_string(bone->id()) + "]", bone->getTransform());
+                }
+            }
+            _shadowShader.setMat4fv("model", _animGPU ? object->model() : glm::mat4{1});
             object->draw();
         }
 
@@ -121,11 +128,16 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         for(const auto &bone : object->bones()) {
             _shader->setMat4fv("model", bone->model());
             _shader->setVec3("color", bone->color());
+            if(_animGPU) {
+                _shader->setMat4fv("bones[" + std::to_string(bone->id()) + "]", bone->getTransform());
+            }
             bone->draw();
         }
-        _shader->setMat4fv("model", object->model());
+        _shader->setBool("animGPU", _animGPU);
+        _shader->setMat4fv("model", _animGPU ? object->model() : glm::mat4{1});
         _shader->setVec3("color", object->color());
         object->draw();
+        _shader->setBool("animGPU", false);
     }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -211,7 +223,7 @@ void Scene::setupObjects() {
             _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 2.f));
             _animatedObjects.back()->addBone(glm::vec3{0,0.5,1});
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
-            _animatedObjects.back()->rotateBone(1,glm::vec3{0,0,90});
+            _animatedObjects.back()->rotateBone(1,glm::vec3{0,0,0});
             _animatedObjects.back()->registerBones();
 
 
@@ -478,8 +490,7 @@ void Scene::updateScene(float deltaTime, float time) {
     switch (_sceneNumber) {
         case 0:
             _animatedObjects[0]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
-            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,-90*deltaTime*sinSign));
-//
+            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
 //            _animatedObjects[1]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
 //            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
             break;
@@ -503,9 +514,10 @@ void Scene::updateScene(float deltaTime, float time) {
             break;
     }
 
-
-    for(auto & object : _animatedObjects) {
-        object->update();
+    if(!_animGPU) {
+        for (auto &object : _animatedObjects) {
+            object->update();
+        }
     }
 }
 

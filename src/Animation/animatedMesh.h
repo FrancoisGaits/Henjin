@@ -54,8 +54,14 @@ private :
     GLuint _vbo;
     GLuint _nbo;
     GLuint _ebo;
+    GLuint _bbo;
+    GLuint _wbo;
 
-    std::unordered_map<std::shared_ptr<Bone>,std::vector<float>> _bonesNweights;
+    std::vector<std::shared_ptr<Bone>> _bones;
+
+//    std::unordered_map<std::shared_ptr<Bone>,std::vector<float>> _bonesNweights;
+    std::vector<int> _bonesIDs;
+    std::vector<float> _bonesWeights;
 };
 
 

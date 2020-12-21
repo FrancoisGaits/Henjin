@@ -2,8 +2,8 @@
 #include <glm/gtx/string_cast.hpp>
 #include "bone.h"
 
-Bone::Bone(glm::vec3 position, float length, glm::vec3 rotation, glm::mat4 parentTranslation,
-           glm::mat4 parentRotation) : _color{glm::vec3{0}} {
+Bone::Bone(unsigned Id, glm::vec3 position, float length, glm::vec3 rotation, glm::mat4 parentTranslation,
+           glm::mat4 parentRotation) : _id{Id}, _color{glm::vec3{0}} {
 
     _lenght = length;
     _translation = glm::translate(glm::mat4{1},position);
@@ -17,8 +17,6 @@ Bone::Bone(glm::vec3 position, float length, glm::vec3 rotation, glm::mat4 paren
 
     _origStart = _totalModel * glm::vec4{0,0,0,1};
     _origEnd = _totalModel * glm::vec4{length,0,0,1};
-
-//    std::cout << "ORIG POS : " << glm::to_string(_origStart) << glm::to_string(origEnd()) << std::endl;
 
     _mesh.addVertex(0,0,0);
     _mesh.addNormal(0,1,0);
@@ -129,6 +127,10 @@ float Bone::getDistanceFrom(glm::vec3 point) {
     return glm::length(glm::cross(ab,av))/glm::length(ab);
 
 
+}
+
+const unsigned Bone::id() const {
+    return _id;
 }
 
 //float Bone::getDistanceFrom(glm::vec3 point) {

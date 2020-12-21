@@ -100,6 +100,8 @@ private:
     ToneMapping _toneMapping = FILMIC;
     float _bloomIntensity = 0.75f;
 
+    bool _animGPU = true;
+
     void setupSkybox();
     void setupObjects();
     void setupLights();

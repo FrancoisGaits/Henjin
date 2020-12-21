@@ -55,7 +55,7 @@ void Cylinder::update() {
 
 void Cylinder::addBone(glm::vec3 position, float lenght, glm::vec3 rotation) {
 
-    _bones.emplace_back(std::make_shared<Bone>(position, lenght, rotation));
+    _bones.emplace_back(std::make_shared<Bone>(_bones.size(),position, lenght, rotation));
 }
 
 const std::vector<std::shared_ptr<Bone>> &Cylinder::bones() {
@@ -68,7 +68,7 @@ void Cylinder::rotateBone(unsigned ind, glm::vec3 rotation) {
 
 void Cylinder::addChildBone(unsigned ind, glm::vec3 position, float lenght, glm::vec3 rotation) {
 
-    _bones.emplace_back(std::make_shared<Bone>(position, lenght, rotation, _bones[ind]->translation(), _bones[ind]->rotation()));
+    _bones.emplace_back(std::make_shared<Bone>(_bones.size(),position, lenght, rotation, _bones[ind]->translation(), _bones[ind]->rotation()));
     _bones[ind]->registerChild(_bones.back());
 }
 

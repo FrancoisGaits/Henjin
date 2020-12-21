@@ -9,7 +9,7 @@
 
 class Bone  {
 public:
-    explicit Bone(glm::vec3 position, float length=1.f, glm::vec3 rotation=glm::vec3{0}, glm::mat4 parentTranslation=glm::mat4{1}, glm::mat4 parentRotation = glm::mat4{1});
+    explicit Bone(unsigned Id, glm::vec3 position, float length=1.f, glm::vec3 rotation=glm::vec3{0}, glm::mat4 parentTranslation=glm::mat4{1}, glm::mat4 parentRotation = glm::mat4{1});
 
     void draw() const;
 
@@ -29,6 +29,7 @@ public:
     glm::mat4 getTransform();
     const glm::vec3& origStart();
     const glm::vec3& origEnd();
+    const unsigned id() const;
 
     void registerChild(const std::shared_ptr<Bone>& bone);
     void setParentTransform(glm::mat4 translation, glm::mat4 rotation);
@@ -38,6 +39,7 @@ public:
 private:
 
     float _lenght;
+    unsigned _id;
 
     glm::mat4 _totalModel;
 

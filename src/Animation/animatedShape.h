@@ -36,7 +36,7 @@ public:
     void scaleY(float scale);
     void scaleZ(float scale);
 
-    void registerBones();
+    void registerBones(float exponent=4.f);
     void resetMesh();
 
 private:

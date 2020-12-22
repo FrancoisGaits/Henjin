@@ -39,7 +39,7 @@ public:
     unsigned nbNormals() const;
 
     void update(glm::mat4 meshModel);
-    void submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel);
+    void submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel, float exponent=4.f);
 
     void load();
 

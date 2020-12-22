@@ -156,4 +156,13 @@ void MainWindow::on_actionToggle_GPU_triggered() {
     glWidget->toggleGPU();
 }
 
+void MainWindow::on_actionWeights_Settings_triggered() {
+    bool ok;
+    double exponent = QInputDialog::getDouble(this, "Set Weights Exponent", "Exponent", glWidget->getExponent(),0.01f,50.,2,&ok,Qt::WindowFlags(),0.01);
+
+    if(ok) {
+        glWidget->setExponent(static_cast<float>(exponent));
+    }
+}
+
 

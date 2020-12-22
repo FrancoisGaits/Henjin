@@ -226,14 +226,19 @@ void Scene::setupObjects() {
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
             _animatedObjects.back()->addChildBone(1,glm::vec3{1,0,0});
             _animatedObjects.back()->addChildBone(2,glm::vec3{1,0,0});
-            _animatedObjects.back()->registerBones();
+            _animatedObjects.back()->registerBones(_exponent);
 
 
             _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(3,0.5,2), 3.f));
             _animatedObjects.back()->addBone(glm::vec3{1.5,0.5,2},1,glm::vec3{0,0,0});
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
             _animatedObjects.back()->addChildBone(1,glm::vec3{1,0,0});
-            _animatedObjects.back()->registerBones();
+            _animatedObjects.back()->registerBones(_exponent);
+
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-3,0.5,2), 2.f));
+            _animatedObjects.back()->addBone(glm::vec3{-4,0.5,2},1,glm::vec3{0,0,0});
+            _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
+            _animatedObjects.back()->registerBones(_exponent);
 
             _objects.emplace_back(std::make_unique<Plane>(glm::vec3(0, -0.5, 0), glm::vec3(1), 10));
 
@@ -484,6 +489,7 @@ void Scene::changeScene(unsigned sceneNumber) {
 
     steps = 0;
 
+
     _sceneNumber = sceneNumber;
 
     setupObjects();
@@ -502,7 +508,7 @@ void Scene::updateScene(float deltaTime, float time) {
     switch (_sceneNumber) {
         case 0:
             if(_animOn) {
-                _animatedObjects[0]->rotateBone(0, glm::vec3(0, 8 * deltaTime, 0));
+                _animatedObjects[0]->rotateBone(0, glm::vec3(0, 15 * deltaTime, 0));
                 _animatedObjects[0]->rotateBone(1, glm::vec3(0, 0, 35 * deltaTime * sinSign));
                 _animatedObjects[0]->rotateBone(2, glm::vec3(0, 0, -25 * deltaTime * sinSign));
                 _animatedObjects[0]->rotateBone(3, glm::vec3(0, -25 * deltaTime * sinSign, 0));
@@ -510,6 +516,8 @@ void Scene::updateScene(float deltaTime, float time) {
                 _animatedObjects[1]->rotateBone(0, glm::vec3(0, 0, 40 * deltaTime * sinSign));
                 _animatedObjects[1]->rotateBone(1, glm::vec3(0, 0, -40 * deltaTime * sinSign));
                 _animatedObjects[1]->rotateBone(2, glm::vec3(0, 0, 40 * deltaTime * sinSign));
+
+                _animatedObjects[2]->rotateBone(1,glm::vec3(25 * deltaTime,0,0));
             }
             break;
         case 1:
@@ -656,5 +664,14 @@ void Scene::setAnimGPU(bool animGPU) {
         }
     }
     _animGPU = animGPU;
+}
+
+void Scene::setExponent(float exponent) {
+    _exponent = exponent;
+    changeScene(_sceneNumber);
+}
+
+float Scene::getExponent() {
+    return _exponent;
 }
 

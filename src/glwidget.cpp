@@ -219,3 +219,14 @@ bool GlWidget::toggleGPU() {
 
     return _animGPU;
 }
+
+void GlWidget::setExponent(float exponent) {
+    _firstTime = QDateTime::currentMSecsSinceEpoch();
+    makeCurrent();
+    _scene->setExponent(exponent);
+    doneCurrent();
+}
+
+float GlWidget::getExponent() {
+    return _scene->getExponent();
+}

@@ -51,8 +51,8 @@ void AnimatedShape::scaleZ(float scale) {
     _model = glm::scale(_model, glm::vec3(1,1,scale));
 }
 
-void AnimatedShape::registerBones() {
-    _mesh.submitBones(bones(),_model);
+void AnimatedShape::registerBones(float exponent) {
+    _mesh.submitBones(bones(),_model, exponent);
 }
 
 void AnimatedShape::resetMesh() {

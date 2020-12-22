@@ -106,7 +106,7 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
 
     for(unsigned i=0; i < vertices.size(); i+=3) {
         glm::vec4 vertex{vertices[i],vertices[i+1],vertices[i+2],1};
-        glm::vec4 normal{normals[i],normals[i+1],normals[i+2],1};
+        glm::vec4 normal{normals[i],normals[i+1],normals[i+2],0};
         unsigned vertId = i/3;
         glm::mat4 accV{0};
 
@@ -124,18 +124,10 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
         newVertices.emplace_back(newVertex.y);
         newVertices.emplace_back(newVertex.z);
 
-//        newNormal /= newNormal.w;
-        newNormal = glm::normalize(newNormal);
-
         newNormals.emplace_back(newNormal.x);
         newNormals.emplace_back(newNormal.y);
         newNormals.emplace_back(newNormal.z);
 
-
-//        newVertices.emplace_back(newVertex.x/newVertex.w);
-//        newVertices.emplace_back(newVertex.y/newVertex.w);
-//        newVertices.emplace_back(newVertex.z/newVertex.w);
-//
 
     }
 
@@ -149,7 +141,7 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
     glBindVertexArray(0);
 }
 
-void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel) {
+void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, glm::mat4 objectModel, float exponent) {
     _bones = bones;
 
     for (unsigned i = 0; i < vertices.size(); i += 3) {
@@ -164,7 +156,7 @@ void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, 
         unsigned nbWeights = 0;
 
         for(const auto & bone : bones) {
-            float dist = 1.f/std::pow(bone->getDistanceFrom(vert),4.f);
+            float dist = 1.f/std::pow(bone->getDistanceFrom(vert),exponent);
 
             if(nbWeights < 4) {
                 weights[nbWeights] = dist;
@@ -194,10 +186,6 @@ void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, 
 
         float sum = weights.x + weights.y + weights.z + weights.w;
         weights /= sum;
-
-//        std::cout << "---- New vertex ----" << std::endl;
-//        std::cout << glm::to_string(weights) << std::endl;
-//        std::cout << glm::to_string(boneIds) << std::endl;
 
         _bonesWeights.emplace_back(weights.x);
         _bonesWeights.emplace_back(weights.y);

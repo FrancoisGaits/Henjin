@@ -99,14 +99,6 @@ void Bone::updateModel() {
         child->setParentTransform(_totalModel);
     }
 }
-//
-//const glm::mat4 &Bone::translation() const{
-//    return _translation;
-//}
-//
-//const glm::mat4 &Bone::rotation() const{
-//    return _rotation;
-//}
 
 float Bone::getDistanceFrom(glm::vec3 point) {
     glm::vec3 ab = origEnd() - origStart();

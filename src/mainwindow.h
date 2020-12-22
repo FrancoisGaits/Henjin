@@ -41,6 +41,8 @@ private slots:
     void on_actionWeights_Off_triggered();
     void on_actionToggle_GPU_triggered();
 
+    void on_actionWeights_Settings_triggered();
+
 };
 
 #endif //HENJIN_MAINWINDOW_H_H

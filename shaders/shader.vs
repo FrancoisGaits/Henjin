@@ -35,15 +35,19 @@ void main(){
         }
 
         gl_Position = projection * view * accV * model * vec4(position, 1.0f);
-        normal = normalize(transpose(inverse(accV * model)) * vec4(inormal,0)).xyz;
+
+        mat3 normalMatrix = mat3((transpose(inverse(model*accV))));
+
+        normal = normalize( (normalMatrix * inormal).xyz);
+
         if(displayWeights) {
             fragColor = weights.xyz;
         } else {
             fragColor = color;
         }
     } else {
-        gl_Position =  projection * view *  model * vec4(position, 1.0f);
-        normal = normalize(transpose(inverse(model)) * vec4(inormal,0)).xyz;
+        gl_Position =  projection * view * model * vec4(position, 1.0f);
+        normal = normalize((transpose(inverse(model)) * vec4(inormal,0)).xyz);
         fragColor = color;
     }
 

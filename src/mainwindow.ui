@@ -62,6 +62,7 @@
     <addaction name="actionAnimation_Off"/>
     <addaction name="actionWeights_Off"/>
     <addaction name="actionToggle_GPU"/>
+    <addaction name="actionWeights_Settings"/>
    </widget>
    <addaction name="menuInfos"/>
    <addaction name="menuScene"/>
@@ -135,6 +136,11 @@
   <action name="actionToggle_GPU">
    <property name="text">
     <string>Toggle GPU</string>
+   </property>
+  </action>
+  <action name="actionWeights_Settings">
+   <property name="text">
+    <string>Weights Settings</string>
    </property>
   </action>
  </widget>

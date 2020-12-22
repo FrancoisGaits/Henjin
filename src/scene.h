@@ -50,11 +50,13 @@ public:
     void setAnim(bool animOn);
     void setDisplayWeights(bool displayWeights);
     void setAnimGPU(bool animGPU);
+    void setExponent(float exponent);
 
     bool getBloom();
     float getExposure();
     ToneMapping getToneMapping();
     float getBloomIntensity();
+    float getExponent();
 
 
 private:
@@ -109,6 +111,7 @@ private:
     bool _displayWeights = false;
 
     double steps = 0;
+    float _exponent = 4.f;
 
     void setupSkybox();
     void setupObjects();

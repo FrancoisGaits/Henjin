@@ -25,11 +25,13 @@ public:
     void setExposure(float exposure);
     void setToneMapping(ToneMapping tm);
     void setBloomIntensity(float bloomIntensity);
+    void setExponent(float exponent);
 
     bool getBloom();
     float getExposure();
     ToneMapping getToneMapping();
     float getBloomIntensity();
+    float getExponent();
 
     bool toggleAnimation();
     bool toggleWeights();

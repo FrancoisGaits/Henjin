@@ -47,6 +47,9 @@ public:
     void setExposure(float exposure);
     void setToneMapping(ToneMapping tm);
     void setBloomIntensity(float bloomIntensity);
+    void setAnim(bool animOn);
+    void setDisplayWeights(bool displayWeights);
+    void setAnimGPU(bool animGPU);
 
     bool getBloom();
     float getExposure();
@@ -101,6 +104,11 @@ private:
     float _bloomIntensity = 0.75f;
 
     bool _animGPU = true;
+
+    bool _animOn = false;
+    bool _displayWeights = false;
+
+    double steps = 0;
 
     void setupSkybox();
     void setupObjects();

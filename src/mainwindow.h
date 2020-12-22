@@ -37,6 +37,10 @@ private slots:
     void on_actionToneMapping_triggered();
     void on_actionBloom_Intensity_triggered();
 
+    void on_actionAnimation_Off_triggered();
+    void on_actionWeights_Off_triggered();
+    void on_actionToggle_GPU_triggered();
+
 };
 
 #endif //HENJIN_MAINWINDOW_H_H

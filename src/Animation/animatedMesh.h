@@ -46,6 +46,7 @@ public:
     void draw(GLenum mode=GL_TRIANGLES) const;
 
     void clear();
+    void reset();
 
     ~AnimatedMesh();
 
@@ -58,8 +59,6 @@ private :
     GLuint _wbo;
 
     std::vector<std::shared_ptr<Bone>> _bones;
-
-//    std::unordered_map<std::shared_ptr<Bone>,std::vector<float>> _bonesNweights;
     std::vector<int> _bonesIDs;
     std::vector<float> _bonesWeights;
 };

@@ -136,6 +136,7 @@ void Scene::draw(GLint qt_framebuffer, float deltaTime, float time) {
         _shader->setBool("animGPU", _animGPU);
         _shader->setMat4fv("model", _animGPU ? object->model() : glm::mat4{1});
         _shader->setVec3("color", object->color());
+        _shader->setBool("displayWeights", _displayWeights);
         object->draw();
         _shader->setBool("animGPU", false);
     }
@@ -220,8 +221,8 @@ void Scene::setupObjects() {
 
     switch (_sceneNumber) {
         case 0: {
-            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(1,0.5,1), 4.f));
-            _animatedObjects.back()->addBone(glm::vec3{-1,0.5,1});
+            _animatedObjects.emplace_back(std::make_unique<Cylinder>(glm::vec3(-1,0.5,-1.5), 4.f));
+            _animatedObjects.back()->addBone(glm::vec3{-3,0.5,-1.5});
             _animatedObjects.back()->addChildBone(0,glm::vec3{1,0,0});
             _animatedObjects.back()->addChildBone(1,glm::vec3{1,0,0});
             _animatedObjects.back()->addChildBone(2,glm::vec3{1,0,0});
@@ -479,7 +480,9 @@ void Scene::cameraKeyReleaseEvent(QKeyEvent *event) {
 }
 
 void Scene::changeScene(unsigned sceneNumber) {
-    if(sceneNumber == _sceneNumber) return;
+//    if(sceneNumber == _sceneNumber) return;
+
+    steps = 0;
 
     _sceneNumber = sceneNumber;
 
@@ -490,19 +493,24 @@ void Scene::changeScene(unsigned sceneNumber) {
 
 void Scene::updateScene(float deltaTime, float time) {
 
-    float sinTime = std::sin(time);
+    if(_animOn) {
+        steps += deltaTime;
+    }
+    float sinTime = std::sin(steps);
     int sinSign = sinTime>0 ? 1 : -1;
 
     switch (_sceneNumber) {
         case 0:
-            _animatedObjects[0]->rotateBone(0,glm::vec3(0,8*deltaTime,0));
-            _animatedObjects[0]->rotateBone(1,glm::vec3(0,0,35*deltaTime*sinSign));
-            _animatedObjects[0]->rotateBone(2,glm::vec3(0,0,-25*deltaTime*sinSign));
-            _animatedObjects[0]->rotateBone(3,glm::vec3(0,-25*deltaTime*sinSign,0));
+            if(_animOn) {
+                _animatedObjects[0]->rotateBone(0, glm::vec3(0, 8 * deltaTime, 0));
+                _animatedObjects[0]->rotateBone(1, glm::vec3(0, 0, 35 * deltaTime * sinSign));
+                _animatedObjects[0]->rotateBone(2, glm::vec3(0, 0, -25 * deltaTime * sinSign));
+                _animatedObjects[0]->rotateBone(3, glm::vec3(0, -25 * deltaTime * sinSign, 0));
 
-            _animatedObjects[1]->rotateBone(0,glm::vec3(0,0,40*deltaTime*sinSign));
-            _animatedObjects[1]->rotateBone(1,glm::vec3(0,0,-40*deltaTime*sinSign));
-            _animatedObjects[1]->rotateBone(2,glm::vec3(0,0,40*deltaTime*sinSign));
+                _animatedObjects[1]->rotateBone(0, glm::vec3(0, 0, 40 * deltaTime * sinSign));
+                _animatedObjects[1]->rotateBone(1, glm::vec3(0, 0, -40 * deltaTime * sinSign));
+                _animatedObjects[1]->rotateBone(2, glm::vec3(0, 0, 40 * deltaTime * sinSign));
+            }
             break;
         case 1:
             _objects.back()->rotate(glm::vec3(deltaTime*90.f,deltaTime*60.f,deltaTime*45.f));
@@ -524,7 +532,7 @@ void Scene::updateScene(float deltaTime, float time) {
             break;
     }
 
-    if(!_animGPU) {
+    if(!_animGPU && _animOn) {
         for (auto &object : _animatedObjects) {
             object->update();
         }
@@ -627,5 +635,26 @@ void Scene::setBloomIntensity(float bloomIntensity) {
 
 float Scene::getBloomIntensity() {
     return _bloomIntensity;
+}
+
+void Scene::setAnim(bool animOn) {
+    _animOn = animOn;
+}
+
+void Scene::setDisplayWeights(bool displayWeights) {
+    _displayWeights = displayWeights;
+}
+
+void Scene::setAnimGPU(bool animGPU) {
+    if(animGPU) {
+        for(auto & object : _animatedObjects) {
+            object->resetMesh();
+        }
+    } else {
+        for(auto & object : _animatedObjects) {
+            object->update();
+        }
+    }
+    _animGPU = animGPU;
 }
 

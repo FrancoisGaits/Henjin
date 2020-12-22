@@ -37,6 +37,7 @@ public:
     void scaleZ(float scale);
 
     void registerBones();
+    void resetMesh();
 
 private:
     glm::vec3 _color;

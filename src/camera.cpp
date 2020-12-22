@@ -96,7 +96,7 @@ void Camera::update(float deltaTime) {
                 dir.y -= 1;
                 break;
             case Qt::Key_Shift:
-                dir.z -= -1;
+                dir.z -= 1;
                 break;
             case Qt::Key_Space:
                 dir.z += 1;

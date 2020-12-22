@@ -17,6 +17,7 @@ uniform int nbDirLights;
 uniform mat4 lightSpaceModels[N_MAX_DIR_LIGHT];
 uniform mat4 bones[N_MAX_BONES];
 uniform bool animGPU;
+uniform bool displayWeights;
 
 out vec3 normal;
 out vec3 fragPosWorld;
@@ -35,7 +36,11 @@ void main(){
 
         gl_Position = projection * view * accV * model * vec4(position, 1.0f);
         normal = normalize(transpose(inverse(accV * model)) * vec4(inormal,0)).xyz;
-        fragColor = weights.xyz;
+        if(displayWeights) {
+            fragColor = weights.xyz;
+        } else {
+            fragColor = color;
+        }
     } else {
         gl_Position =  projection * view *  model * vec4(position, 1.0f);
         normal = normalize(transpose(inverse(model)) * vec4(inormal,0)).xyz;

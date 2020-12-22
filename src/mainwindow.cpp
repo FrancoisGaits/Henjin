@@ -144,4 +144,16 @@ void MainWindow::on_actionScene_Info_triggered() {
     QMessageBox::information(this, "Scene Informations", message.str().c_str());
 }
 
+void MainWindow::on_actionAnimation_Off_triggered() {
+    glWidget->toggleAnimation();
+}
+
+void MainWindow::on_actionWeights_Off_triggered() {
+    glWidget->toggleWeights();
+}
+
+void MainWindow::on_actionToggle_GPU_triggered() {
+    glWidget->toggleGPU();
+}
+
 

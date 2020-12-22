@@ -1,7 +1,7 @@
 #include <iostream>
 #include "cylinder.h"
 
-Cylinder::Cylinder(glm::vec3 position, float length, int subdiv1, int subdiv2) : AnimatedShape(position,glm::vec3(0,0,1)){
+Cylinder::Cylinder(glm::vec3 position, float length, int subdiv1, int subdiv2) : AnimatedShape(position,glm::vec3(0.1,0.8,1)){
     glm::vec3 base = glm::vec3(0,0,0);
     glm::vec3 axis = glm::vec3(1,0,0);
     float radius = .5f;

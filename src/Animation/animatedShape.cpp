@@ -54,3 +54,7 @@ void AnimatedShape::scaleZ(float scale) {
 void AnimatedShape::registerBones() {
     _mesh.submitBones(bones(),_model);
 }
+
+void AnimatedShape::resetMesh() {
+    _mesh.reset();
+}

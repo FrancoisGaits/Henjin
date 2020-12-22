@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1152</width>
-     <height>20</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuInfos">
@@ -55,8 +55,17 @@
     <addaction name="menuChange_Scene"/>
     <addaction name="menuEdit_Parameters"/>
    </widget>
+   <widget class="QMenu" name="menuAnimation">
+    <property name="title">
+     <string>Animation</string>
+    </property>
+    <addaction name="actionAnimation_Off"/>
+    <addaction name="actionWeights_Off"/>
+    <addaction name="actionToggle_GPU"/>
+   </widget>
    <addaction name="menuInfos"/>
    <addaction name="menuScene"/>
+   <addaction name="menuAnimation"/>
   </widget>
   <action name="actionOpenGl_Info">
    <property name="text">
@@ -106,6 +115,26 @@
   <action name="actionAnim">
    <property name="text">
     <string>Anim</string>
+   </property>
+  </action>
+  <action name="actionAnimation_Off">
+   <property name="text">
+    <string>Toggle Animation</string>
+   </property>
+  </action>
+  <action name="actionPoids_Off">
+   <property name="text">
+    <string>Poids : Off</string>
+   </property>
+  </action>
+  <action name="actionWeights_Off">
+   <property name="text">
+    <string>Toggle Weights</string>
+   </property>
+  </action>
+  <action name="actionToggle_GPU">
+   <property name="text">
+    <string>Toggle GPU</string>
    </property>
   </action>
  </widget>

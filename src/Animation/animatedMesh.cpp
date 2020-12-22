@@ -109,22 +109,23 @@ void AnimatedMesh::update(glm::mat4 meshModel) {
         glm::vec4 normal{normals[i],normals[i+1],normals[i+2],1};
         unsigned vertId = i/3;
         glm::mat4 accV{0};
-        glm::mat4 accN{0};
 
         glm::ivec4 bonesId = glm::ivec4(_bonesIDs[vertId*4],_bonesIDs[vertId*4+1],_bonesIDs[vertId*4+2],_bonesIDs[vertId*4+3]);
         glm::vec4 weights = glm::vec4(_bonesWeights[vertId*4],_bonesWeights[vertId*4+1],_bonesWeights[vertId*4+2],_bonesWeights[vertId*4+3]);
 
         for(unsigned j=0; j<4 && bonesId[j] != -1; ++j) {
             accV += weights[j] * _bones[bonesId[j]]->getTransform();
-            accN += weights[j] * glm::inverse(glm::transpose(_bones[bonesId[j]]->getTransform()));
         }
 
         glm::vec4 newVertex = accV*meshModel*vertex;
-        glm::vec4 newNormal = accN*glm::inverse(glm::transpose(meshModel))*normal;
+        glm::vec4 newNormal = glm::transpose(glm::inverse(accV*meshModel))*normal;
 
         newVertices.emplace_back(newVertex.x);
         newVertices.emplace_back(newVertex.y);
         newVertices.emplace_back(newVertex.z);
+
+//        newNormal /= newNormal.w;
+        newNormal = glm::normalize(newNormal);
 
         newNormals.emplace_back(newNormal.x);
         newNormals.emplace_back(newNormal.y);
@@ -218,6 +219,17 @@ void AnimatedMesh::submitBones(const std::vector<std::shared_ptr<Bone>>& bones, 
     glBufferData(GL_ARRAY_BUFFER, _bonesWeights.size() * sizeof(GLfloat), _bonesWeights.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid *) 0);
     glEnableVertexAttribArray(3);
+
+    glBindVertexArray(0);
+}
+
+void AnimatedMesh::reset() {
+    glBindVertexArray(_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(GLfloat), vertices.data());
+
+    glBindBuffer(GL_ARRAY_BUFFER, _nbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(GLfloat), normals.data());
 
     glBindVertexArray(0);
 }

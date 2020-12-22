@@ -31,6 +31,10 @@ public:
     ToneMapping getToneMapping();
     float getBloomIntensity();
 
+    bool toggleAnimation();
+    bool toggleWeights();
+    bool toggleGPU();
+
 public slots:
     void cleanup();
 
@@ -57,6 +61,10 @@ private:
     std::int64_t _lastTime;
     std::int64_t _firstTime;
     float _deltaTime;
+
+    bool _animOn = false;
+    bool _displayWeights = false;
+    bool _animGPU = true;
 
 };
 

@@ -49,6 +49,7 @@ void GlWidget::paintGL() {
     _deltaTime = static_cast<float>(time - _lastTime)/1000.f;
     _lastTime = time;
 
+
     update();
 }
 
@@ -96,6 +97,17 @@ void GlWidget::keyPressEvent(QKeyEvent *event) {
                 _sceneExposure -= 0.1f;
                 setExposure(_sceneExposure);
             }
+            break;
+
+        case Qt::Key_P :
+            toggleAnimation();
+            break;
+
+        case Qt::Key_O :
+            toggleWeights();
+            break;
+        case Qt::Key_I :
+            toggleGPU();
             break;
 
         default:
@@ -182,4 +194,28 @@ void GlWidget::setBloomIntensity(float bloomIntensity) {
 
 float GlWidget::getBloomIntensity() {
     return _scene->getBloomIntensity();
+}
+
+bool GlWidget::toggleAnimation() {
+    _animOn = !_animOn;
+
+    _scene->setAnim(_animOn);
+
+    return _animOn;
+}
+
+bool GlWidget::toggleWeights() {
+    _displayWeights = !_displayWeights;
+
+    _scene->setDisplayWeights(_displayWeights);
+
+    return _displayWeights;
+}
+
+bool GlWidget::toggleGPU() {
+    _animGPU = !_animGPU;
+
+    _scene->setAnimGPU(_animGPU);
+
+    return _animGPU;
 }
